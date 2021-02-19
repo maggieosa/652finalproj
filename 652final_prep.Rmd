@@ -1,0 +1,262 @@
+---
+title: "draft_final"
+author: "Maggie Head"
+date: "2/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r library}
+library(tidyverse)
+library(haven)
+library(lm.beta)
+library(rstatix)
+```
+
+## R Markdown
+
+
+```{r data1}
+weight2011 <- here::here("data", "2011_weight_history.XPT") %>%
+  read_xpt()
+
+dep2011 <-  here::here("data", "2011_depression_screener.XPT") %>%
+  read_xpt()
+
+dep <- left_join(weight2011,dep2011)
+
+dep <- dep %>%
+  filter((WHD020 != 7777 & WHD020 != 9999), 
+         (WHD045 != 77777 & WHD045 != 99999))
+
+dep <- dep %>%
+  mutate(dif_weight = WHD020 - WHD045)
+
+summary(dep$dif_weight)
+
+
+dep <- dep %>%
+  rowwise() %>%
+  mutate(dpq = mean(c(DPQ010, DPQ020, DPQ030, DPQ040, DPQ050,
+                        DPQ060, DPQ070, DPQ080,DPQ090, DPQ100)))
+#examining relationship
+
+mod <- lm(dpq ~ dif_weight, dep)
+summary(mod)
+```
+```{r plot1}
+dep %>%
+  ggplot(aes(dif_weight,dpq)) +
+  geom_point()+
+  geom_smooth()
+```
+
+
+
+
+
+```{r data2}
+weight2003 <- here::here("data", "2003_weight_history.XPT") %>%
+  read_xpt()
+
+weight2005 <- here::here("data", "2005_weight_history.XPT") %>%
+  read_xpt()
+
+weight2007 <- here::here("data", "2007_weight_history.XPT") %>%
+  read_xpt()
+
+weight2009 <- here::here("data", "2009_weight_history.XPT") %>%
+  read_xpt()
+
+weight2013 <- here::here("data", "2013_weight_history.XPT") %>%
+  read_xpt()
+
+weight2015 <- here::here("data", "2015_weight_history.XPT") %>%
+  read_xpt()
+
+###foodinsecure
+
+food2003 <- here::here("data", "2003_food_security.XPT") %>%
+  read_xpt()
+
+food2005 <- here::here("data", "2005_food_security.XPT") %>%
+  read_xpt()
+
+food2007 <- here::here("data", "2007_food_security.XPT") %>%
+  read_xpt()
+
+food2009 <- here::here("data", "2009_food_security.XPT") %>%
+  read_xpt()
+
+food2011 <- here::here("data", "2011_food_security.XPT") %>%
+  read_xpt()
+
+food2013 <- here::here("data", "2013_food_security.XPT") %>%
+  read_xpt()
+
+food2015 <- here::here("data", "2015_food_security.XPT") %>%
+  read_xpt()
+
+#joining
+yr2005 <- left_join(weight2005, food2005)
+yr2007 <- left_join(weight2007, food2007)
+yr2009 <- left_join(weight2009, food2009)
+yr2011 <- left_join(weight2011, food2011)
+yr2013 <- left_join(weight2013, food2013)
+yr2015 <- left_join(weight2015, food2015)
+
+#adding years, narrowing data
+
+
+yr2005<- yr2005 %>%
+  add_column(year = 2005) %>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, FSDHH, year, FSDAD)
+
+yr2007 <- yr2007 %>%
+  add_column(year = 2007)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, FSDHH, year, FSDAD)
+
+yr2009 <- yr2009 %>%
+  add_column(year = 2009)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, FSDHH, year, FSDAD)
+
+yr2011 <- yr2011 %>%
+  add_column(year = 2011)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, FSDHH, year, FSDAD)
+
+yr2013 <- yr2013 %>%
+  add_column(year = 2013)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, FSDHH, year, FSDAD)
+
+yr2015 <- yr2015%>%
+  add_column(year = 2015)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, FSDHH, year, FSDAD)
+
+
+
+
+full_yr <- yr2015 %>%
+  add_row(yr2005) %>%
+  add_row(yr2007) %>%
+  add_row(yr2009) %>%
+  add_row(yr2011) %>%
+  add_row(yr2013)
+    
+#recoding: 1 = presence of ed behavior    
+full_yr$WHD080A[which(!is.na(full_yr$WHD080A))] <-1    
+full_yr$WHD080C[which(!is.na(full_yr$WHD080C))] <-1  
+full_yr$WHD080E[which(!is.na(full_yr$WHD080E))] <-1  
+full_yr$WHD080G[which(!is.na(full_yr$WHD080G))] <-1  
+full_yr$WHD080J[which(!is.na(full_yr$WHD080J))] <-1  
+full_yr$WHD080K[which(!is.na(full_yr$WHD080K))] <-1  
+full_yr$WHD080M[which(!is.na(full_yr$WHD080M))] <-1  
+full_yr$WHD080O[which(!is.na(full_yr$WHD080O))] <-1  
+
+#create ed composite   
+full_yr <- full_yr %>%
+  rowwise() %>%
+  mutate(ed_sum = sum(WHD080A, WHD080C, WHD080E,
+                        WHD080G, WHD080J, WHD080K,
+                        WHD080M, WHD080O, na.rm = T))
+
+full_df <- full_yr %>%
+  group_by(FSDAD, year) %>%
+  summarise(ed_mean = mean(ed_sum, na.rm = T))
+
+full_df$FSDAD <- as.factor(full_df$FSDAD)  
+
+
+#testing model
+full_yr$FSDAD <- as.factor(full_yr$FSDAD)  
+full_yr <- full_yr %>%
+  rowwise() %>%
+  mutate(ed_mean = mean(ed_sum, na.rm = T))
+
+ed.aov <- aov(ed_mean ~ FSDAD, data = full_yr)
+summary(ed.aov)
+TukeyHSD(ed.aov)
+
+```
+
+
+```{r plot2}
+#plot2
+full_df %>%
+  ggplot(aes(year, ed_mean)) +
+  geom_line(aes(color = FSDAD))
+```
+
+
+```{r data3}
+demo2015 <- here::here("data", "2015_demographics.XPT") %>%
+  read_xpt()
+
+weight2015 <- here::here("data", "2015_weight_history.XPT") %>%
+  read_xpt()
+
+food2015 <- here::here("data", "2015_food_security.XPT") %>%
+  read_xpt()
+
+foodwt15 <- left_join(weight2015, food2015)
+race_full <- left_join(foodwt15, demo2015)
+
+race_full <- race_full %>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, FSDHH, FSDAD, 
+        INDFMIN2, INDFMPIR, INDHHIN2, RIDRETH3, SEQN)
+
+#recoding ED behaviors
+race_full$WHD080A[which(!is.na(race_full$WHD080A))] <-1    
+race_full$WHD080C[which(!is.na(race_full$WHD080C))] <-1  
+race_full$WHD080E[which(!is.na(race_full$WHD080E))] <-1  
+race_full$WHD080G[which(!is.na(race_full$WHD080G))] <-1  
+race_full$WHD080J[which(!is.na(race_full$WHD080J))] <-1  
+race_full$WHD080K[which(!is.na(race_full$WHD080K))] <-1  
+race_full$WHD080M[which(!is.na(race_full$WHD080M))] <-1  
+race_full$WHD080O[which(!is.na(race_full$WHD080O))] <-1  
+
+
+
+race_summ <- race_full %>%
+  group_by(RIDRETH3, FSDHH) %>%
+  summarize(freq1 = sum(WHD080A, na.rm = T)/n(),
+            freq2 = sum(WHD080C, na.rm = T)/n(),
+            freq3 = sum(WHD080E, na.rm = T)/n(),
+            freq4 = sum(WHD080G, na.rm = T)/n(),
+            freq5 = sum(WHD080J, na.rm = T)/n(),
+            freq6 = sum(WHD080K, na.rm = T)/n(),
+            freq7 = sum(WHD080M, na.rm = T)/n(),
+            freq8 = sum(WHD080O, na.rm = T)/n())
+
+long <- race_summ %>%
+  pivot_longer(!c(FSDHH, RIDRETH3), 
+                  names_to = "behavior", 
+                  values_to = "frequency")
+
+long %>%
+  ggplot(aes(behavior, FSDHH)) +
+  geom_tile(aes(fill = frequency)) +
+  facet_wrap(~RIDRETH3)
+```
+
+
+
+
+
+
