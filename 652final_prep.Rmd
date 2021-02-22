@@ -16,49 +16,174 @@ library(lm.beta)
 library(rstatix)
 ```
 
-## R Markdown
 
+# Data Preparation for First Plot
 
-```{r data1}
+```{r data_weightgoal}
 weight2011 <- here::here("data", "2011_weight_history.XPT") %>%
   read_xpt()
 
 dep2011 <-  here::here("data", "2011_depression_screener.XPT") %>%
   read_xpt()
 
-dep <- left_join(weight2011,dep2011)
+demo2011 <- here::here("data", "2011_demographics.XPT") %>%
+  read_xpt()
 
+dep1 <- left_join(weight2011,dep2011)
+dep <- left_join(dep1, demo2011)
+
+#removing "refuse to answer"
 dep <- dep %>%
   filter((WHD020 != 7777 & WHD020 != 9999), 
          (WHD045 != 77777 & WHD045 != 99999))
 
-dep <- dep %>%
-  mutate(dif_weight = WHD020 - WHD045)
-
-summary(dep$dif_weight)
-
+#new variables: depression mean 
 
 dep <- dep %>%
   rowwise() %>%
-  mutate(dpq = mean(c(DPQ010, DPQ020, DPQ030, DPQ040, DPQ050,
-                        DPQ060, DPQ070, DPQ080,DPQ090, DPQ100)))
-#examining relationship
+  mutate(dpq = sum(c(DPQ010, DPQ020, DPQ030, DPQ040, DPQ050,
+                        DPQ060, DPQ070, DPQ080,DPQ090, DPQ100)))%>%
+  drop_na(dpq)
 
-mod <- lm(dpq ~ dif_weight, dep)
-summary(mod)
+
+#actual-ideal weight discrepency variable
+dep <- dep %>%
+  mutate(dif_weight = WHD045 - WHD020)
+summary(dep$dif_weight)
+
+#removing men 
+dep_filtered <- dep %>%
+  filter(RIAGENDR == 2,
+         dif_weight <=0)%>%
+  mutate(mean_dpq = mean(dpq))
+summary(dep_filtered$dif_weight)
+
+
 ```
-```{r plot1}
-dep %>%
+
+# Draft of First Plot 
+```{r ploy_weightgoaldraft}
+dep_filtered %>%
   ggplot(aes(dif_weight,dpq)) +
-  geom_point()+
-  geom_smooth()
+  geom_col() +
+  scale_x_reverse()
+    labs(x = "Desired Weight Loss Goal (in pounds)",
+         y = "Depressive Symptoms",
+       title = "Depressive Symptoms",
+       subtitle = "According to Desired Weight Loss")
+```
+# Continuing First Plot 
+```{r plot_weightgoal}
+#creating factor variable for actual-ideal weight
+
+dep$dif_weight_fct <-Hmisc::cut2(dep$dif_weight,c(-125,-100, -75,
+                                                  -50, -25))
+summary(dep$dif_weight_fct)
+dep$dif_weight_fct <- as.factor(dep$dif_weight_fct)
+levels(dep$dif_weight_fct)
+
+
+#renaming levels
+dep_lev <- dep %>%
+  mutate(dif_weight_fct = fct_recode(dif_weight_fct, 
+                  "More than 125 lbs" = "[-240,-125)", 
+                  "100-125" = "[-125,-100)",
+                  "75-100" = "[-100, -75)",
+                  "50-75" = "[ -75, -50)",
+                  "25-50" = "[ -50, -25)",
+                  "0-25" = "[ -25, 100]"))
+
+#mean by factor
+plot1_df <-dep_lev %>%
+  group_by(dif_weight_fct) %>%
+  summarise(group_dpq = mean(dpq),
+            group_se = sd(dpq)/sqrt(n()))
+
+
+#plot
+
+plot1_df %>%
+  ggplot(aes(group_dpq, dif_weight_fct)) +
+  geom_errorbarh(aes(xmin =  group_dpq - 1.96*group_se,
+     xmax = group_dpq+ 1.96*group_se),
+     color = "cadetblue3",
+     width = .02) +
+  geom_point() +
+  labs(x = "Severity of Depressive Symptomatology",
+         y = "Desired Weight Loss Goal (in pounds)",
+       title = "Depressive Symptoms",
+       subtitle = "According to Desired Weight Loss",
+       caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
+  theme_minimal()
+```
+# Data Prep for Second Plot
+```{r data_secure}
+secure2015 <- here::here("data", "2015_food_security.XPT") %>%
+  read_xpt()
+
+dep2015 <-  here::here("data", "2015_depression_screener.XPT") %>%
+  read_xpt()
+
+secure_dep <- left_join(secure2015, dep2015)
+
+
+secure_dep <- secure_dep %>%
+  rowwise() %>%
+  mutate(dpq_sum = sum(c(DPQ010, DPQ020, DPQ030, DPQ040, DPQ050,
+                        DPQ060, DPQ070, DPQ080,DPQ090, DPQ100))) %>%
+  drop_na(dpq_sum)
+
+secure_group <- secure_dep %>%
+  group_by(FSDHH) %>%
+  summarise(dpq_group = mean(dpq_sum))
+
+
+
+#examining relationship
+secure_dep$FSDHH <- as.factor(secure_dep$FSDHH)
+secure_mod <- lm(dpq_sum ~ FSDHH, secure_dep)
+summary(secure_mod)
+
+secure_group$FSDHH <- as.factor(secure_group$FSDHH)
 ```
 
+# Draft of Second Plot
 
+```{r secure_plot_draft}
+#plot
+secure_group %>%
+  ggplot() +
+  geom_col(aes(FSDHH,dpq_group)) +
+  labs(x ="Level of Food Insercurity",
+       y = "Severity of Depresive Symptomatology")
+```
 
+# Second Plot Continued
 
+```{r securedepress_plot}
+#plot
 
-```{r data2}
+#removing NA group
+secure_group <- secure_group[-5,]
+
+secure_group %>%
+  ggplot() +
+  geom_col(aes(FSDHH,dpq_group), fill = "thistle", alpha = .8) +
+  labs(x ="Level of Food Insercurity (per household)",
+       y = "Average Depresive Symptomatology",
+       title = "Depressive Symptoms by Food Security Level",
+       caption ="Data from the 2015 National Health and Nutrition Examination Survey")+
+  scale_x_discrete(breaks = c(1,2,3,4),
+                   labels = c("1" = "Full",
+                            "2" = "Marginal",
+                            "3" = "Low",
+                            "4" = "Vey Low"))+
+  theme_minimal()
+```
+
+# Data Prep for Third Plot 
+
+```{r securetrends}
 weight2003 <- here::here("data", "2003_weight_history.XPT") %>%
   read_xpt()
 
@@ -175,34 +300,67 @@ full_yr <- full_yr %>%
                         WHD080M, WHD080O, na.rm = T))
 
 full_df <- full_yr %>%
-  group_by(FSDAD, year) %>%
+  group_by(FSDHH, year) %>%
   summarise(ed_mean = mean(ed_sum, na.rm = T))
 
-full_df$FSDAD <- as.factor(full_df$FSDAD)  
+full_df <- full_df[-c(25:30),]
+
+full_df$FSDHH<- as.factor(full_df$FSDHH)  
 
 
 #testing model
-full_yr$FSDAD <- as.factor(full_yr$FSDAD)  
+full_yr$FSDHH <- as.factor(full_yr$FSDHH)  
 full_yr <- full_yr %>%
   rowwise() %>%
   mutate(ed_mean = mean(ed_sum, na.rm = T))
 
-ed.aov <- aov(ed_mean ~ FSDAD, data = full_yr)
-summary(ed.aov)
-TukeyHSD(ed.aov)
-
 ```
 
 
-```{r plot2}
+# Draft of Third Plot 
+
+```{r secure-raceplot_draft}
 #plot2
 full_df %>%
   ggplot(aes(year, ed_mean)) +
-  geom_line(aes(color = FSDAD))
+  geom_point(aes(color = FSDHH))+
+  labs(x = "Year",
+       y = "Disordered Eating Symptoms",
+       title = "Disordered Eating Symptoms by Food Security Group",
+       color = "Food Security Level") 
 ```
 
+# Third Plot Continued 
 
-```{r data3}
+```{r secure-raceplot}
+#recoding factors, creating percentage
+full_yr_grouped <- full_df %>%
+  mutate(FSDHH = fct_recode(FSDHH,
+                            "Full" = "1",
+                            "Marginal" = "2",
+                            "Low" = "3",
+                            "Very Low" = "4"),
+         ed_mean = ed_mean/5)
+
+#plot2
+full_yr_grouped %>%
+  ggplot(aes(year, ed_mean)) +
+  geom_point(aes(color = FSDHH))+
+  geom_line(aes(color = FSDHH))+
+  scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
+                     labels = c(2005,2007,2009,2011,2013,2015))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x = "Year",
+       y = "Proportion of Engagement \nin Disordered Eating Symptoms(%)",
+       title = "Trends in Disordered Eating Symptoms",
+       subtitle = "According to Food Security Level",
+       color = "Food Security Level") +
+  theme_minimal()
+```
+
+# Data Preparation for Fourth Plot
+
+```{r tile_data}
 demo2015 <- here::here("data", "2015_demographics.XPT") %>%
   read_xpt()
 
@@ -235,7 +393,7 @@ race_full$WHD080O[which(!is.na(race_full$WHD080O))] <-1
 
 race_summ <- race_full %>%
   group_by(RIDRETH3, FSDHH) %>%
-  summarize(freq1 = sum(WHD080A, na.rm = T)/n(),
+  summarise(freq1 = sum(WHD080A, na.rm = T)/n(),
             freq2 = sum(WHD080C, na.rm = T)/n(),
             freq3 = sum(WHD080E, na.rm = T)/n(),
             freq4 = sum(WHD080G, na.rm = T)/n(),
@@ -249,14 +407,297 @@ long <- race_summ %>%
                   names_to = "behavior", 
                   values_to = "frequency")
 
-long %>%
+#recoding factors 
+
+
+long_plot_draft <- long %>%
+  mutate_at(c("FSDHH", "RIDRETH3","behavior"), as.factor) %>%
+  mutate(FSDHH = fct_recode(FSDHH,
+                            "Full" = "1",
+                            "Marginal" = "2",
+                            "Low" = "3",
+                            "Very Low" = "4"))
+
+```
+
+
+# Draft of Fourth Plot 
+
+```{r plot3_draft}
+long_plot_draft %>%
   ggplot(aes(behavior, FSDHH)) +
   geom_tile(aes(fill = frequency)) +
-  facet_wrap(~RIDRETH3)
+  facet_wrap(~RIDRETH3) +
+  labs(x = "Disordered Behavior",
+       y = "Food Security Level",
+       title = "Frequency of Disordered Eating Behaviors",
+       subtitle = "By Racial Identity and Food Security Level")
+```
+
+# Fourth Plot 
+
+```{r plot3, fig.height=10, fig.width=4}
+#recoding factors 
+
+
+long_plot <- long %>%
+  mutate_at(c("FSDHH", "RIDRETH3","behavior"), as.factor) %>%
+  mutate(FSDHH = fct_recode(FSDHH,
+                            "Full" = "1",
+                            "Marginal" = "2",
+                            "Low" = "3",
+                            "Very Low" = "4"),
+         RIDRETH3 = fct_recode(RIDRETH3, 
+                  "Mexican American" = "1",
+                  "Other Hispanic" = "2",
+                  "Non-Hispanic White" = "3",
+                  "Non-Hispanic Black" = "4",
+                  "Non-Hispanic Asian" = "6",
+                  "Other Race/Multiracial" = "7"),
+         behavior = fct_recode(behavior,
+                               "Ate Less Overall" = "freq1",
+                               "Ate Less Fat" = "freq2",
+                               "Skipped Meals" = "freq3",
+                               "Liquid Diet" = "freq4",
+                               "nonRx Diet Pills" = "freq5",
+                               "Purging" = "freq6",
+                               "Water Loading" = "freq7",
+                               "Carb Restriction" = "freq8")) %>%
+  drop_na()
+
+long_plot %>%
+  ggplot(aes(behavior, FSDHH)) +
+  geom_tile(aes(fill = frequency), color = "white") +
+  facet_wrap(~RIDRETH3,nrow =6) +
+  labs(x = "Disordered Eating Behavior",
+       y = "Food Security Level",
+       fill = "Frequency", 
+       title = "Frequency of Disordered Eating Behaviors",
+       subtitle = "According to Racial Identity and Food Security Level",
+       caption = "Data from the 2015 National Health and Nutrition Examination Survey") +
+  coord_flip()+
+  theme_minimal()
+```
+
+# Data Preparation of Fifth Plot
+
+```{r racetrends_data}
+weight2003 <- here::here("data", "2003_weight_history.XPT") %>%
+  read_xpt()
+
+weight2005 <- here::here("data", "2005_weight_history.XPT") %>%
+  read_xpt()
+
+weight2007 <- here::here("data", "2007_weight_history.XPT") %>%
+  read_xpt()
+
+weight2009 <- here::here("data", "2009_weight_history.XPT") %>%
+  read_xpt()
+
+weight2013 <- here::here("data", "2013_weight_history.XPT") %>%
+  read_xpt()
+
+weight2015 <- here::here("data", "2015_weight_history.XPT") %>%
+  read_xpt()
+
+###demographics
+
+demo2005 <- here::here("data", "2005_demographics.XPT") %>%
+  read_xpt()
+
+demo2007 <- here::here("data", "2007_demographics.XPT") %>%
+  read_xpt()
+
+demo2009 <- here::here("data", "2009_demographics.XPT") %>%
+  read_xpt()
+
+demo2011 <- here::here("data", "2011_demographics.XPT") %>%
+  read_xpt()
+
+demo2013 <- here::here("data", "2013_demographics.XPT") %>%
+  read_xpt()
+
+demo2015 <- here::here("data", "2015_demographics.XPT") %>%
+  read_xpt()
+
+
+#joining
+year1 <- left_join(weight2005, demo2005)
+year2 <- left_join(weight2007, demo2007)
+year3 <- left_join(weight2009, demo2009)
+year4 <- left_join(weight2011, demo2011)
+year5 <- left_join(weight2013, demo2013)
+year6 <- left_join(weight2015, demo2015)
+
+#creating full years
+
+year1<- year1 %>%
+  add_column(year = 2005) %>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, RIDRETH1, year)
+
+year2 <- year2 %>%
+  add_column(year = 2007)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O,RIDRETH1, year)
+
+year3 <- year3 %>%
+  add_column(year = 2009)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, RIDRETH1, year)
+
+year4 <- year4 %>%
+  add_column(year = 2011)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, RIDRETH1, year)
+
+year5 <- year5 %>%
+  add_column(year = 2013)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, RIDRETH1, year)
+
+year6 <- year6%>%
+  add_column(year = 2015)%>%
+    select(WHD080A, WHD080C, WHD080E,
+        WHD080G, WHD080J, WHD080K,
+         WHD080M, WHD080O, RIDRETH1, year)
+
+
+race_weight <- year6 %>%
+  add_row(year5) %>%
+  add_row(year4) %>%
+  add_row(year3) %>%
+  add_row(year2) %>%
+  add_row(year1)
+
+#recoding: 1 = presence of ed behavior    
+race_weight$WHD080A[which(!is.na(race_weight$WHD080A))] <-1    
+race_weight$WHD080C[which(!is.na(race_weight$WHD080C))] <-1  
+race_weight$WHD080E[which(!is.na(race_weight$WHD080E))] <-1  
+race_weight$WHD080G[which(!is.na(race_weight$WHD080G))] <-1  
+race_weight$WHD080J[which(!is.na(race_weight$WHD080J))] <-1  
+race_weight$WHD080K[which(!is.na(race_weight$WHD080K))] <-1  
+race_weight$WHD080M[which(!is.na(race_weight$WHD080M))] <-1  
+race_weight$WHD080O[which(!is.na(race_weight$WHD080O))] <-1  
+
+
+#create ed composite   
+race_weight<- race_weight %>%
+  rowwise() %>%
+  mutate(ed_sum = sum(WHD080A, WHD080C, WHD080E,
+                        WHD080G, WHD080J, WHD080K,
+                        WHD080M, WHD080O, na.rm = T))
+
+race_weight_group <- race_weight %>%
+  group_by(RIDRETH1, year) %>%
+  summarise(ed_mean_race = mean(ed_sum, na.rm = T))
+```
+
+# Draft of Fifth Plot
+
+```{r raceplot_draft}
+race_weight_group$RIDRETH1 <- as.factor(race_weight_group$RIDRETH1)
+
+
+#plot draft
+race_weight_group %>%
+  ggplot(aes(year, ed_mean_race)) +
+  geom_line(aes(color = RIDRETH1)) +
+  labs(x = "Year",
+       y = "Mean of Disordered Eating Symptoms",
+       title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
+       subtitle = "by Racial Identity")
+  
+```
+
+# Fifth Plot 
+
+```{r raceplot}
+race_weight_group$RIDRETH1 <- as.factor(race_weight_group$RIDRETH1)
+
+race_weight_labeled <- race_weight_group %>%
+  mutate(RIDRETH1 = fct_recode(RIDRETH1, 
+                  "Mexican American" = "1",
+                  "Other Hispanic" = "2",
+                  "Non-Hispanic White" = "3",
+                  "Non-Hispanic Black" = "4",
+                  "Other Race/Multiracial" = "5"),
+         ed_mean_race = ed_mean_race/5)
+
+
+race_weight_labeled %>%
+  ggplot(aes(year, ed_mean_race)) +
+  geom_point(aes(color = RIDRETH1))+
+  geom_line(aes(color = RIDRETH1)) +
+  scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
+                     labels = c(2005,2007,2009,2011,2013,2015))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x = "Year",
+       y = "Mean of Disordered Eating Symptoms",
+       color = "Racial Identity", 
+       caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
+       title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
+       subtitle = "by Racial Identity") +
+  theme_minimal()
+  
 ```
 
 
 
 
 
+
+```{r model1}
+#testing model
+race_weight$RIDRETH1<- as.factor(race_weight$RIDRETH1)  
+race_weight <- race_weight %>%
+  rowwise() %>%
+  mutate(ed_mean = mean(ed_sum, na.rm = T))
+
+ed_aov_race <- aov(ed_mean ~ RIDRETH1, data = race_weight)
+summary(ed_aov_race)
+TukeyHSD(ed_aov_race)
+```
+
+```{r datacal}
+cal <- here::here("data", "2017_individual_day_nutrition.XPT") %>%
+  read_xpt()
+
+dep17 <- here::here("data", "2017_depression_screener.XPT") %>%
+  read_xpt()
+
+total_cal <- left_join(dep17,cal)
+
+demo17 <-here::here("data", "2017_demographics.XPT") %>%
+  read_xpt()
+
+weight17 <- here::here("data", "2017_weight_history.XPT") %>%
+  read_xpt()
+
+df_cal <- left_join(total_cal, demo17)
+
+df_cal_1 <- left_join(df_cal,weight17)
+#create depression composite
+new_cal <- df_cal_1 %>%
+  rowwise() %>%
+  mutate(dpq_sum = sum(c(DPQ010, DPQ020, DPQ030, DPQ040, DPQ050,
+                        DPQ060, DPQ070, DPQ080,DPQ090, DPQ100)),
+         cals = DR1TKCAL/WHD010) %>%
+  drop_na(c(dpq_sum, cals)) %>%
+  filter(RIAGENDR == 2)
+
+new_cal %>%
+  ggplot(aes(cals, dpq_sum))+
+  geom_point(alpha = 0.2) +
+  geom_smooth()
+
+mod2<- lm(dpq_sum ~cals, data = new_cal)
+summary(mod2)
+
+```
 
