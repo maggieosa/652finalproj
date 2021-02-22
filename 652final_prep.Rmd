@@ -82,6 +82,7 @@ summary(dep$dif_weight_fct)
 dep$dif_weight_fct <- as.factor(dep$dif_weight_fct)
 levels(dep$dif_weight_fct)
 
+#githubtest
 
 #renaming levels
 dep_lev <- dep %>%
@@ -609,9 +610,7 @@ race_weight_group %>%
   ggplot(aes(year, ed_mean_race)) +
   geom_line(aes(color = RIDRETH1)) +
   labs(x = "Year",
-       y = "Mean of Disordered Eating Symptoms",
-       title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
-       subtitle = "by Racial Identity")
+       y = "Mean of Disordered Eating Symptoms")
   
 ```
 
