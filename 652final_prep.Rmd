@@ -21,7 +21,7 @@ library(ggrepel)
 
 # Data Preparation for First Plot
 
-```{r data_weightgoal}
+```{r data_weightgoal, echo=TRUE}
 weight2011 <- here::here("data", "2011_weight_history.XPT") %>%
   read_xpt()
 
@@ -64,7 +64,9 @@ summary(dep_filtered$dif_weight)
 ```
 
 # Draft of First Plot 
-```{r ploy_weightgoaldraft}
+
+
+```{r plot_weightgoaldraft,echo=TRUE}
 dep_filtered %>%
   ggplot(aes(dif_weight,dpq)) +
   geom_col() +
@@ -75,7 +77,9 @@ dep_filtered %>%
        subtitle = "According to Desired Weight Loss")
 ```
 # Continuing First Plot 
-```{r plot_weightgoal}
+
+
+```{r plot_weightgoal, echo=TRUE}
 #creating factor variable for actual-ideal weight
 
 dep$dif_weight_fct <-Hmisc::cut2(dep$dif_weight,c(-125,-100, -75,
@@ -120,11 +124,15 @@ plot1_df %>%
        caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
   theme_minimal()
 
-#multiple error bars, density stripes according to color 
+
 ```
+
+
 # Draft 3 of Weight Plot
 
-```{r weightplot_draft3}
+
+
+```{r weightplot_draft3, echo=TRUE}
 plot1_df %>%
   ggplot(aes(group_dpq, dif_weight_fct)) +
   geom_errorbarh(aes(xmin =  group_dpq - 1.96*group_se,
@@ -133,17 +141,17 @@ plot1_df %>%
      height = .2) +
   geom_errorbarh(aes(xmin = group_dpq + qnorm(.025)*group_se,
                     xmax = group_dpq + qnorm(.975)*group_se),
-                color = lighten("#4375D3", .6),
+                color = "cadetblue2",
                 height = 0.2,
                 size = 0.5) + # 95% CI
   geom_errorbarh(aes(xmin = group_dpq + qnorm(.05)*group_se,
                     xmax = group_dpq + qnorm(.95)*group_se),
-                color = lighten("#4375D3", .3),
+                color = lighten("darkolivegreen2", .1),
                 height = 0.2,
                 size = 0.8) + # 90% CI
   geom_errorbarh(aes(xmin = group_dpq + qnorm(.1)*group_se,
                     xmax = group_dpq + qnorm(.9)*group_se),
-                color = "#4375D3",
+                color = "darkolivegreen3",
                 height = 0.2,
                 size = 1.1) +
   geom_point() +
@@ -155,8 +163,12 @@ plot1_df %>%
   theme_minimal()
 ```
 
+
+
 # Data Prep for Second Plot
-```{r data_secure}
+
+
+```{r data_secure, echo=TRUE}
 secure2015 <- here::here("data", "2015_food_security.XPT") %>%
   read_xpt()
 
@@ -199,7 +211,9 @@ secure_group %>%
 
 # Second Plot Continued
 
-```{r securedepress_plot}
+
+
+```{r securedepress_plot, echo=TRUE}
 #plot
 
 #removing NA group
@@ -222,13 +236,43 @@ secure_group %>%
   theme_minimal()+
   theme(panel.grid.major.x = element_blank())
 
-#fill for the bar according to axis (groups)
-#probably only need y axis gridlines
+
 ```
+
+
+# Continuing Draft
+
+
+
+```{r securedepress_plotdraft3, echo=TRUE}
+
+secure_group %>%
+  ggplot() +
+  geom_col(aes(FSDHH,dpq_group, fill = FSDHH), alpha = .8,
+           show.legend = F) +
+  geom_text(aes(FSDHH,dpq_group, label = paste0(round(dpq_group,2))), 
+            nudge_y = .4, size = 4)+
+  labs(x ="Level of Food Insercurity (per household)",
+       y = "Average Depresive Symptomatology",
+       title = "Depressive Symptoms by Food Security Level",
+       caption ="Data from the 2015 National Health and Nutrition Examination Survey")+
+  scale_x_discrete(breaks = c(1,2,3,4),
+                   labels = c("1" = "Full",
+                            "2" = "Marginal",
+                            "3" = "Low",
+                            "4" = "Very Low"))+
+  scale_fill_brewer(palette = "Set3")+
+  theme_minimal()+
+  coord_flip()+
+  theme(panel.grid.major.x = element_blank())
+
+
+```
+
 
 # Data Prep for Third Plot 
 
-```{r securetrends}
+```{r securetrends, echo=TRUE}
 weight2003 <- here::here("data", "2003_weight_history.XPT") %>%
   read_xpt()
 
@@ -364,7 +408,7 @@ full_yr <- full_yr %>%
 
 # Draft of Third Plot 
 
-```{r secure-raceplot_draft}
+```{r secure-raceplot_draft, echo=TRUE}
 #plot2
 full_df %>%
   ggplot(aes(year, ed_mean)) +
@@ -377,7 +421,7 @@ full_df %>%
 
 # Third Plot Continued 
 
-```{r secure-raceplot}
+```{r secure-raceplot, echo=TRUE}
 #recoding factors, creating percentage
 full_yr_grouped <- full_df %>%
   mutate(FSDHH = fct_recode(FSDHH,
@@ -404,7 +448,9 @@ full_yr_grouped %>%
 ```
 
 
-```{r plot3_draft3}
+# And Continuing 
+
+```{r plot3_draft3, echo=TRUE}
 
 full_yr_grouped %>%
   ggplot(aes(year, ed_mean)) +
@@ -415,7 +461,7 @@ full_yr_grouped %>%
                      limits = c(2005,2017.2))+
   scale_y_continuous(labels = scales::percent)+
   labs(x = "Year",
-       y = "Proportion of Engagement \nin Disordered Eating Symptoms(%)",
+       y = "Proportion of Sample Engagement \nin Disordered Eating Symptoms(%)",
        title = "Trends in Disordered Eating Symptoms",
        subtitle = "According to Food Security Level",
        color = "Food Security Level",
@@ -425,9 +471,10 @@ full_yr_grouped %>%
   theme_minimal()
 ```
 
+
 # Data Preparation for Fourth Plot
 
-```{r tile_data}
+```{r tile_data, echo=TRUE}
 demo2015 <- here::here("data", "2015_demographics.XPT") %>%
   read_xpt()
 
@@ -551,7 +598,7 @@ long_plot %>%
 
 # Next Draft
 
-```{r plot4_draft3}
+```{r plot4_draft3, echo=TRUE}
 long_plot %>%
   ggplot(aes(behavior, FSDHH)) +
   geom_tile(aes(fill = frequency), color = "white") +
@@ -563,7 +610,9 @@ long_plot %>%
        subtitle = "According to Racial Identity and Food Security Level",
        caption = "Data from the 2015 National Health and Nutrition Examination Survey") +
   coord_flip()+
-  theme_minimal()
+  scale_fill_viridis_c(option="magma", labels = scales::percent)+
+  theme_minimal() +
+  theme(plot.caption.position = "plot")
 ```
 
 
@@ -690,7 +739,7 @@ race_weight_group <- race_weight %>%
 
 # Draft of Fifth Plot
 
-```{r raceplot_draft}
+```{r raceplot_draft, echo=TRUE}
 race_weight_group$RIDRETH1 <- as.factor(race_weight_group$RIDRETH1)
 
 
@@ -705,7 +754,7 @@ race_weight_group %>%
 
 # Fifth Plot 
 
-```{r raceplot}
+```{r raceplot, echo=TRUE}
 race_weight_group$RIDRETH1 <- as.factor(race_weight_group$RIDRETH1)
 
 race_weight_labeled <- race_weight_group %>%
@@ -733,16 +782,10 @@ race_weight_labeled %>%
        subtitle = "by Racial Identity") +
   theme_minimal()
   
-
-#ggplotly basic interactions- highlights over a certain line - INTERACTIVE Graph not animated
-#patchwork package (have an overall title rather than individual title)
-#use ggprepel to make sure that it points  to the line 
-#create new df, filter to have only the end points (2015)
-#double check aspect ratio
 ```
 
 
-```{r raceplot3_draft}
+```{r raceplot3_draft, echo=TRUE}
 
 race_weight_labeled %>%
   ggplot(aes(year, ed_mean_race)) +
@@ -754,7 +797,7 @@ race_weight_labeled %>%
   scale_y_continuous(labels = scales::percent,
                      limits = c(0.1,0.22))+
   labs(x = "Year",
-       y = "Mean of Disordered Eating Symptoms",
+       y = "Percentage of Sample Engagement \nin Disordered Eating Symptoms",
        color = "Racial Identity", 
        caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
        title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
@@ -766,7 +809,9 @@ race_weight_labeled %>%
 
 ```
 
-```{r model1}
+
+
+```{r model1, echo=TRUE}
 #testing model
 race_weight$RIDRETH1<- as.factor(race_weight$RIDRETH1)  
 race_weight <- race_weight %>%
