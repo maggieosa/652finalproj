@@ -14,6 +14,8 @@ library(tidyverse)
 library(haven)
 library(lm.beta)
 library(rstatix)
+library(colorspace)
+library(ggrepel)
 ```
 
 
@@ -109,7 +111,41 @@ plot1_df %>%
   geom_errorbarh(aes(xmin =  group_dpq - 1.96*group_se,
      xmax = group_dpq+ 1.96*group_se),
      color = "cadetblue3",
-     width = .02) +
+     height = .5) +
+  geom_point() +
+  labs(x = "Severity of Depressive Symptomatology",
+         y = "Desired Weight Loss Goal (in pounds)",
+       title = "Depressive Symptoms",
+       subtitle = "According to Desired Weight Loss",
+       caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
+  theme_minimal()
+
+#multiple error bars, density stripes according to color 
+```
+# Draft 3 of Weight Plot
+
+```{r weightplot_draft3}
+plot1_df %>%
+  ggplot(aes(group_dpq, dif_weight_fct)) +
+  geom_errorbarh(aes(xmin =  group_dpq - 1.96*group_se,
+     xmax = group_dpq+ 1.96*group_se),
+     color = "thistle",
+     height = .2) +
+  geom_errorbarh(aes(xmin = group_dpq + qnorm(.025)*group_se,
+                    xmax = group_dpq + qnorm(.975)*group_se),
+                color = lighten("#4375D3", .6),
+                height = 0.2,
+                size = 0.5) + # 95% CI
+  geom_errorbarh(aes(xmin = group_dpq + qnorm(.05)*group_se,
+                    xmax = group_dpq + qnorm(.95)*group_se),
+                color = lighten("#4375D3", .3),
+                height = 0.2,
+                size = 0.8) + # 90% CI
+  geom_errorbarh(aes(xmin = group_dpq + qnorm(.1)*group_se,
+                    xmax = group_dpq + qnorm(.9)*group_se),
+                color = "#4375D3",
+                height = 0.2,
+                size = 1.1) +
   geom_point() +
   labs(x = "Severity of Depressive Symptomatology",
          y = "Desired Weight Loss Goal (in pounds)",
@@ -118,6 +154,7 @@ plot1_df %>%
        caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
   theme_minimal()
 ```
+
 # Data Prep for Second Plot
 ```{r data_secure}
 secure2015 <- here::here("data", "2015_food_security.XPT") %>%
@@ -170,7 +207,8 @@ secure_group <- secure_group[-5,]
 
 secure_group %>%
   ggplot() +
-  geom_col(aes(FSDHH,dpq_group), fill = "thistle", alpha = .8) +
+  geom_col(aes(FSDHH,dpq_group, fill = FSDHH), alpha = .8,
+           show.legend = F) +
   labs(x ="Level of Food Insercurity (per household)",
        y = "Average Depresive Symptomatology",
        title = "Depressive Symptoms by Food Security Level",
@@ -179,8 +217,13 @@ secure_group %>%
                    labels = c("1" = "Full",
                             "2" = "Marginal",
                             "3" = "Low",
-                            "4" = "Vey Low"))+
-  theme_minimal()
+                            "4" = "Very Low"))+
+  scale_fill_brewer(palette = "Set3")+
+  theme_minimal()+
+  theme(panel.grid.major.x = element_blank())
+
+#fill for the bar according to axis (groups)
+#probably only need y axis gridlines
 ```
 
 # Data Prep for Third Plot 
@@ -360,6 +403,28 @@ full_yr_grouped %>%
   theme_minimal()
 ```
 
+
+```{r plot3_draft3}
+
+full_yr_grouped %>%
+  ggplot(aes(year, ed_mean)) +
+  geom_point(aes(color = FSDHH), show.legend = F)+
+  geom_line(aes(color = FSDHH), show.legend = F)+
+  scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
+                     labels = c(2005,2007,2009,2011,2013,2015),
+                     limits = c(2005,2017.2))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x = "Year",
+       y = "Proportion of Engagement \nin Disordered Eating Symptoms(%)",
+       title = "Trends in Disordered Eating Symptoms",
+       subtitle = "According to Food Security Level",
+       color = "Food Security Level",
+       caption = "Data from the National Health and Nutrition Examination Survey 2005-2015") +
+  geom_text_repel(data = filter(full_yr_grouped, year == "2015"),
+            aes(y = ed_mean, label = FSDHH, color = FSDHH),show.legend = F,nudge_x = 5, segment.linetype = "dashed", segment.size = .2)+
+  theme_minimal()
+```
+
 # Data Preparation for Fourth Plot
 
 ```{r tile_data}
@@ -438,7 +503,7 @@ long_plot_draft %>%
 
 # Fourth Plot 
 
-```{r plot3, fig.height=10, fig.width=4}
+```{r plot4, fig.height=10, fig.width=4}
 #recoding factors 
 
 
@@ -470,7 +535,27 @@ long_plot <- long %>%
 long_plot %>%
   ggplot(aes(behavior, FSDHH)) +
   geom_tile(aes(fill = frequency), color = "white") +
-  facet_wrap(~RIDRETH3,nrow =6) +
+  facet_wrap(~RIDRETH3,nrow =3) +
+  labs(x = "Disordered Eating Behavior",
+       y = "Food Security Level",
+       fill = "Frequency", 
+       title = "Frequency of Disordered Eating Behaviors",
+       subtitle = "According to Racial Identity and Food Security Level",
+       caption = "Data from the 2015 National Health and Nutrition Examination Survey") +
+  coord_flip()+
+  scale_fill_viridis_c(option="magma")+
+  theme_minimal()
+
+
+```
+
+# Next Draft
+
+```{r plot4_draft3}
+long_plot %>%
+  ggplot(aes(behavior, FSDHH)) +
+  geom_tile(aes(fill = frequency), color = "white") +
+  facet_wrap(~RIDRETH3,nrow =3) +
   labs(x = "Disordered Eating Behavior",
        y = "Food Security Level",
        fill = "Frequency", 
@@ -480,6 +565,9 @@ long_plot %>%
   coord_flip()+
   theme_minimal()
 ```
+
+
+
 
 # Data Preparation of Fifth Plot
 
@@ -645,12 +733,38 @@ race_weight_labeled %>%
        subtitle = "by Racial Identity") +
   theme_minimal()
   
+
+#ggplotly basic interactions- highlights over a certain line - INTERACTIVE Graph not animated
+#patchwork package (have an overall title rather than individual title)
+#use ggprepel to make sure that it points  to the line 
+#create new df, filter to have only the end points (2015)
+#double check aspect ratio
 ```
 
 
+```{r raceplot3_draft}
+
+race_weight_labeled %>%
+  ggplot(aes(year, ed_mean_race)) +
+  geom_point(aes(color = RIDRETH1), show.legend = F)+
+  geom_line(aes(color = RIDRETH1), show.legend = F) +
+  scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
+                     labels = c(2005,2007,2009,2011,2013,2015),
+                     limits = c(2005,2020))+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0.1,0.22))+
+  labs(x = "Year",
+       y = "Mean of Disordered Eating Symptoms",
+       color = "Racial Identity", 
+       caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
+       title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
+       subtitle = "by Racial Identity") +
+  geom_text_repel(data = filter(race_weight_labeled, year == "2015"),
+            aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
+  theme_minimal()
 
 
-
+```
 
 ```{r model1}
 #testing model
@@ -664,40 +778,5 @@ summary(ed_aov_race)
 TukeyHSD(ed_aov_race)
 ```
 
-```{r datacal}
-cal <- here::here("data", "2017_individual_day_nutrition.XPT") %>%
-  read_xpt()
 
-dep17 <- here::here("data", "2017_depression_screener.XPT") %>%
-  read_xpt()
-
-total_cal <- left_join(dep17,cal)
-
-demo17 <-here::here("data", "2017_demographics.XPT") %>%
-  read_xpt()
-
-weight17 <- here::here("data", "2017_weight_history.XPT") %>%
-  read_xpt()
-
-df_cal <- left_join(total_cal, demo17)
-
-df_cal_1 <- left_join(df_cal,weight17)
-#create depression composite
-new_cal <- df_cal_1 %>%
-  rowwise() %>%
-  mutate(dpq_sum = sum(c(DPQ010, DPQ020, DPQ030, DPQ040, DPQ050,
-                        DPQ060, DPQ070, DPQ080,DPQ090, DPQ100)),
-         cals = DR1TKCAL/WHD010) %>%
-  drop_na(c(dpq_sum, cals)) %>%
-  filter(RIAGENDR == 2)
-
-new_cal %>%
-  ggplot(aes(cals, dpq_sum))+
-  geom_point(alpha = 0.2) +
-  geom_smooth()
-
-mod2<- lm(dpq_sum ~cals, data = new_cal)
-summary(mod2)
-
-```
 
