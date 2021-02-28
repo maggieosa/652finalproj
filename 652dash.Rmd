@@ -1,8 +1,9 @@
 ---
 title: "EDLD652 Final Project"
+runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
+    orientation: rows
     vertical_layout: fill
     source_code: https://github.com/maggieosa/652finalproj
 ---
@@ -15,12 +16,13 @@ library(lm.beta)
 library(rstatix)
 library(colorspace)
 library(ggrepel)
+library(plotly)
 ```
 First Visual
 =========================
 
 
-Column {data-width=650}
+Row {data-width=650}
 -----------------------------------------------------------------------
 
 ### First Visual
@@ -120,7 +122,7 @@ plot1_df %>%
   theme_minimal()
 ```
 
-Column {data-width=350}
+Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
 ### Very First Draft
@@ -159,7 +161,7 @@ Second Visual
 =========================
 
 
-Column {data-width=650}
+Row {data-width=650}
 -----------------------------------------------------------------------
 
 ### Final Visual
@@ -218,7 +220,7 @@ secure_group %>%
 
 ```
 
-Column {data-width=350}
+Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
 ### Very First Draft
@@ -260,7 +262,7 @@ Third Visual
 =========================
 
 
-Column {data-width=650}
+Row {data-width=650}
 -----------------------------------------------------------------------
 
 ### Final Visual
@@ -428,7 +430,7 @@ full_yr_grouped %>%
 ```
 
 
-Column {data-width=350}
+Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
 ### Very First Draft
@@ -469,7 +471,7 @@ Fourth Visual
 =========================
 
 
-Column {data-width=650}
+Row {data-width=650}
 -----------------------------------------------------------------------
 
 ### Final Visual
@@ -576,7 +578,7 @@ long_plot %>%
 
 ```
 
-Column {data-width=350}
+Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
 ### Very First Draft
@@ -616,7 +618,7 @@ Fifth Visual
 =========================
 
 
-Column {data-width=650}
+Row {data-width=650}
 -----------------------------------------------------------------------
 
 ### Final Visual
@@ -750,7 +752,7 @@ race_weight_labeled <- race_weight_group %>%
                   "Other Race/Multiracial" = "5"),
          ed_mean_race = ed_mean_race/5)
 #final plot
-race_weight_labeled %>%
+final_race_plot <- race_weight_labeled %>%
   ggplot(aes(year, ed_mean_race)) +
   geom_point(aes(color = RIDRETH1), show.legend = F)+
   geom_line(aes(color = RIDRETH1), show.legend = F) +
@@ -768,9 +770,11 @@ race_weight_labeled %>%
   geom_text_repel(data = filter(race_weight_labeled, year == "2015"),
             aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
   theme_minimal()
+
+renderPlotly(final_race_plot)
 ```
 
-Column {data-width=350}
+Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
 ### Very First Draft
