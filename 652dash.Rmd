@@ -217,12 +217,13 @@ secure_mod <- lm(dpq_sum ~ FSDHH, secure_dep)
 ## coord_flip() can be bypassed these days with manually specifying the x and y.
 ## Also, I assume you don't want the FSDHH == NA plotted, when I made the plot
 ## it looked like a labeled "5" with no bar, so I filtered those for missingness 
-## I also labeled your factor in the mutate call so you only did it once
-## this could be my eyes, but that light green is kind of hard to see. The 
+## in the mutate call.
+
+## One suggestion about color: 
+## This could be my eyes, but that light green is kind of hard to see. The 
 ## darker green and blue are okay, but I have some trouble seeing that light green
 
 secure_group %>% 
-  filter(!is.na(FSDHH)) %>% 
   ggplot() +
   geom_col(aes(y = FSDHH, 
                x = dpq_group, 
