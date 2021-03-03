@@ -114,7 +114,6 @@ plot1_df %>%
   ggplot(aes(group_dpq, dif_weight_fct)) +
   geom_errorbarh(aes(xmin =  group_dpq - 1.96*group_se,
      xmax = group_dpq+ 1.96*group_se),
-     color = "cadetblue3",
      height = .5) +
   geom_point() +
   labs(x = "Severity of Depressive Symptomatology",

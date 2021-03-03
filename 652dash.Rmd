@@ -1,13 +1,17 @@
 ---
-title: "EDLD652 Final Project"
+title: "U.S. Population Trends in Disordered Eating and Body Image"
 runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
+    css: 652final.css
+    theme: journal
+    resize_reload: FALSE
+    social: menu
     orientation: rows
-    vertical_layout: fill
+    vertical_layout: scroll
     source_code: https://github.com/maggieosa/652finalproj
 ---
-
+  
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(tidyverse)
@@ -17,15 +21,55 @@ library(rstatix)
 library(colorspace)
 library(ggrepel)
 library(plotly)
+library(colorblindr)
 ```
-First Visual
+
+
+Sidebar {.sidebar}
+=====================================
+
+
+
+
+
+**Data Source**
+
+
+Access to these data provided by Inter-university Consortium for Political and Social Research (ICPSR). Additional details on methodology can be found at the [ICPSR website](https://www.icpsr.umich.edu/web/ICPSR/series/39) and the [CDC website](https://wwwn.cdc.gov/nchs/nhanes/Default.aspx).
+
+
+**Analytics**
+
+
+Plots produced using R's `ggplot`and `shiny` packages. Dashboard produced using R's `flexdashboard` package as part of `Rmarkdown`.
+
+
+
+Background
+=========================
+
+```{r picture, echo = F, out.width = '100%'}
+knitr::include_graphics("1504865489164-Fin-Illustration.png")
+```
+
+
+
+
+Row {data-width=1000}
+-----------------------------------------------------------------------
+### Disordered Eating: An Epidemic in the United States
+
+The data for these visualizations were derived from the National Health and Nutrition Examination Surveys (2005-2015). The National Health and Nutrition Examination Survey (NHANES) is a program of studies designed to assess the health and nutritional status of adults and children in the United States. The survey combines interviews and physical examinations. NHANES is a major program of the National Center for Health Statistics (NCHS); NCHS is part of the Centers for Disease Control and Prevention (CDC). Data regarding disordered eating behaviors were derived from interview questions asking adult participants if they had sought weight loss within the last year. Response options were "Yes" or "No". Positive responses were qualified by methods used to lose weight, with engagement in a particular disordered eating behavior coded as "1" and non-engagement as "0".
+
+
+Body Image
 =========================
 
 
 Row {data-width=650}
 -----------------------------------------------------------------------
 
-### First Visual
+### Final Visual
 
 ```{r plot1}
 #dataprep
@@ -78,7 +122,7 @@ dep$dif_weight_fct <- as.factor(dep$dif_weight_fct)
 #renaming levels
 dep_lev <- dep %>%
   mutate(dif_weight_fct = fct_recode(dif_weight_fct, 
-                  "More than 125 lbs" = "[-240,-125)", 
+                  "More than\n125 lbs" = "[-240,-125)", 
                   "100-125" = "[-125,-100)",
                   "75-100" = "[-100, -75)",
                   "50-75" = "[ -75, -50)",
@@ -100,12 +144,12 @@ plot1_df %>%
      height = .2) +
   geom_errorbarh(aes(xmin = group_dpq + qnorm(.025)*group_se,
                     xmax = group_dpq + qnorm(.975)*group_se),
-                color = "cadetblue2",
+                color = "cyan4",
                 height = 0.2,
                 size = 0.5) + # 95% CI
   geom_errorbarh(aes(xmin = group_dpq + qnorm(.05)*group_se,
                     xmax = group_dpq + qnorm(.95)*group_se),
-                color = lighten("darkolivegreen2", .1),
+                color = lighten("magenta4", .1),
                 height = 0.2,
                 size = 0.8) + # 90% CI
   geom_errorbarh(aes(xmin = group_dpq + qnorm(.1)*group_se,
@@ -119,13 +163,14 @@ plot1_df %>%
        title = "Depressive Symptoms",
        subtitle = "According to Desired Weight Loss",
        caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
-  theme_minimal()
+    theme_minimal(base_size = 16)+
+  theme(plot.caption = element_text(size = 10))
 ```
 
 Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
-### Very First Draft
+### First Draft
 
 ```{r startingplot}
 dep_filtered %>%
@@ -138,14 +183,13 @@ dep_filtered %>%
        subtitle = "According to Desired Weight Loss")
 ```
 
-### Continuing Draft
+### Second Draft
 
 ```{r v2}
 plot1_df %>%
   ggplot(aes(group_dpq, dif_weight_fct)) +
   geom_errorbarh(aes(xmin =  group_dpq - 1.96*group_se,
      xmax = group_dpq+ 1.96*group_se),
-     color = "cadetblue3",
      height = .5) +
   geom_point() +
   labs(x = "Severity of Depressive Symptomatology",
@@ -157,12 +201,13 @@ plot1_df %>%
 ```
 
 
-Second Visual
+Food Security
 =========================
 
 
 Row {data-width=650}
 -----------------------------------------------------------------------
+
 
 ### Final Visual
 
@@ -185,7 +230,8 @@ secure_dep <- secure_dep %>%
 
 secure_group <- secure_dep %>%
   group_by(FSDHH) %>%
-  summarise(dpq_group = mean(dpq_sum))
+  summarise(dpq_group = mean(dpq_sum)) %>%
+  drop_na(FSDHH)
 
 
 
@@ -214,26 +260,27 @@ secure_group %>%
                             "3" = "Low",
                             "4" = "Very Low"))+
   scale_fill_brewer(palette = "Set3")+
-  theme_minimal()+
+  theme_minimal(base_size = 14)+
   coord_flip()+
-  theme(panel.grid.major.x = element_blank())
+  theme(panel.grid.major.x = element_blank())+
+  theme(plot.caption = element_text(size = 10))
 
 ```
 
 Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
-### Very First Draft
+### First Draft
 
 ```{r startingplot2}
-secure_group %>%
+secure_dep %>%
   ggplot() +
-  geom_col(aes(FSDHH,dpq_group)) +
+  geom_col(aes(FSDHH,dpq_sum)) +
   labs(x ="Level of Food Insercurity",
-       y = "Severity of Depresive Symptomatology")
+       y = "Depresive Symptomatology")
 ```
 
-### Continuing Draft
+### Second Draft
 
 ```{r v2secure}
 #removing NA group
@@ -258,7 +305,7 @@ secure_group %>%
 ```
 
 
-Third Visual
+10-year Food Security
 =========================
 
 
@@ -433,7 +480,7 @@ full_yr_grouped %>%
 Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
-### Very First Draft
+### First Draft
 
 ```{r startingplot3}
 full_df %>%
@@ -445,7 +492,7 @@ full_df %>%
        color = "Food Security Level") 
 ```
 
-### Continuing Draft
+### Second Draft
 
 ```{r v2plot3}
 full_yr_grouped %>%
@@ -467,7 +514,7 @@ full_yr_grouped %>%
 
 
 
-Fourth Visual
+Race & Food Security
 =========================
 
 
@@ -562,9 +609,9 @@ long_plot <- long %>%
   drop_na()
 
 long_plot %>%
-  ggplot(aes(behavior, FSDHH)) +
+  ggplot(aes(behavior, fct_reorder(FSDHH, frequency))) +
   geom_tile(aes(fill = frequency), color = "white") +
-  facet_wrap(~RIDRETH3,nrow =3) +
+  facet_wrap(~fct_reorder(RIDRETH3, frequency), nrow = 3) + 
   labs(x = "Disordered Eating Behavior",
        y = "Food Security Level",
        fill = "Frequency", 
@@ -574,14 +621,15 @@ long_plot %>%
   coord_flip()+
   scale_fill_viridis_c(option="magma", labels = scales::percent)+
   theme_minimal() +
-  theme(plot.caption.position = "plot")
+  theme(plot.caption.position = "plot") +
+  theme(plot.caption = element_text(size = 12))
 
 ```
 
 Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
-### Very First Draft
+### First Draft
 
 ```{r startingplot4}
 long_plot_draft %>%
@@ -594,7 +642,7 @@ long_plot_draft %>%
        subtitle = "By Racial Identity and Food Security Level")
 ```
 
-### Continuing Draft
+### Second Draft
 
 ```{r v2plot4}
 
@@ -614,7 +662,7 @@ long_plot %>%
 
 
 
-Fifth Visual
+Race & Disordered Eating
 =========================
 
 
@@ -751,25 +799,43 @@ race_weight_labeled <- race_weight_group %>%
                   "Non-Hispanic Black" = "4",
                   "Other Race/Multiracial" = "5"),
          ed_mean_race = ed_mean_race/5)
+
 #final plot
 final_race_plot <- race_weight_labeled %>%
   ggplot(aes(year, ed_mean_race)) +
-  geom_point(aes(color = RIDRETH1), show.legend = F)+
+  geom_point(aes(color = RIDRETH1, 
+                 text = sprintf("Race: %s<br>Year: %d<br>ED Symptoms: %.2f",RIDRETH1, year, ed_mean_race)),
+             show.legend = F)+
   geom_line(aes(color = RIDRETH1), show.legend = F) +
   scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
                      labels = c(2005,2007,2009,2011,2013,2015),
-                     limits = c(2005,2020))+
+                     limits = c(2005,2016))+
   scale_y_continuous(labels = scales::percent,
                      limits = c(0.1,0.22))+
+  scale_color_OkabeIto() +
   labs(x = "Year",
-       y = "Percentage of Sample Engagement \nin Disordered Eating Symptoms",
+       y = "Percentage of Sample Engagement \nin Disordered Eating Symptoms\n                     ",
        color = "Racial Identity", 
        caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
        title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
        subtitle = "by Racial Identity") +
   geom_text_repel(data = filter(race_weight_labeled, year == "2015"),
             aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
-  theme_minimal()
+  theme_minimal(base_size = 14) +
+  theme(plot.caption = element_text(size = 10))+
+  theme(axis.text=element_text(size=14))+
+  theme(axis.title.y = element_text(
+    margin = margin(t = 0, r = 0, b = 20, l = 0)))
+
+t <- list(
+  family = "Overpass",
+  color = 'black')
+
+final_race_plot <- ggplotly(final_race_plot,
+                            tooltip = "text") %>%
+  layout(font=t)
+
+
 
 renderPlotly(final_race_plot)
 ```
@@ -777,7 +843,7 @@ renderPlotly(final_race_plot)
 Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
 
-### Very First Draft
+### First Draft
 
 ```{r startingplot5}
 race_weight_group %>%
@@ -787,7 +853,7 @@ race_weight_group %>%
        y = "Mean of Disordered Eating Symptoms")
 ```
 
-### Continuing Draft
+### Second Draft
 
 ```{r v2plot5}
 
@@ -807,3 +873,53 @@ race_weight_labeled %>%
   theme_minimal()
   
 ```
+
+### Continuing Draft
+
+```{r v3race}
+
+race_weight_labeled %>%
+  ggplot(aes(year, ed_mean_race)) +
+  geom_point(aes(color = RIDRETH1), show.legend = F)+
+  geom_line(aes(color = RIDRETH1), show.legend = F) +
+  scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
+                     labels = c(2005,2007,2009,2011,2013,2015),
+                     limits = c(2005,2020))+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0.1,0.22))+
+  labs(x = "Year",
+       y = "Percentage of Sample Engagement \nin Disordered Eating Symptoms",
+       color = "Racial Identity", 
+       caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
+       title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
+       subtitle = "by Racial Identity") +
+  geom_text_repel(data = filter(race_weight_labeled, year == "2015"),
+            aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
+  theme_minimal()
+```
+
+### Another Draft
+
+```{r v4race}
+
+race_weight_labeled %>%
+  ggplot(aes(year, ed_mean_race)) +
+  geom_point(aes(color = RIDRETH1), show.legend = F)+
+  geom_line(aes(color = RIDRETH1), show.legend = F) +
+  scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
+                     labels = c(2005,2007,2009,2011,2013,2015),
+                     limits = c(2005,2020))+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0.1,0.22))+
+  labs(x = "Year",
+       y = "Percentage of Sample Engagement \nin Disordered Eating Symptoms",
+       color = "Racial Identity", 
+       caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
+       title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
+       subtitle = "by Racial Identity") +
+  geom_text_repel(data = filter(race_weight_labeled, year == "2015"),
+            aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
+  theme_minimal()
+```
+
+
