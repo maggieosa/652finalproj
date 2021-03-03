@@ -74,11 +74,13 @@ dep$dif_weight_fct <-Hmisc::cut2(dep$dif_weight,c(-125,-100, -75,
 
 dep$dif_weight_fct <- as.factor(dep$dif_weight_fct)
 
+## CHRIS' COMMENT
+## I added a \n within your longer label, just to give the plot more space
 
 #renaming levels
 dep_lev <- dep %>%
   mutate(dif_weight_fct = fct_recode(dif_weight_fct, 
-                  "More than 125 lbs" = "[-240,-125)", 
+                  "More than\n125 lbs" = "[-240,-125)", 
                   "100-125" = "[-125,-100)",
                   "75-100" = "[-100, -75)",
                   "50-75" = "[ -75, -50)",
@@ -119,8 +121,17 @@ plot1_df %>%
        title = "Depressive Symptoms",
        subtitle = "According to Desired Weight Loss",
        caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
-  theme_minimal()
+  theme_minimal(base_size = 18)+
+  theme(plot.caption = element_text(size = 12))
 ```
+
+### Text to Explain Plot
+
+Adding words here would help people understand the final plot a bit more:
+  * Background 
+  * Sample Characteristics
+  * What you want the reader to draw from your plot
+  * Something to prep you for the next pages
 
 Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
@@ -185,7 +196,14 @@ secure_dep <- secure_dep %>%
 
 secure_group <- secure_dep %>%
   group_by(FSDHH) %>%
-  summarise(dpq_group = mean(dpq_sum))
+  summarise(dpq_group = mean(dpq_sum)) %>% 
+  mutate(FSDHH = factor(FSDHH,
+                        levels = c(1, 2, 3, 4), 
+                        labels = c('Very Low', 
+                        'Low', 
+                        'Marginal', 
+                        'Full'))) %>% 
+  filter(!is.na(FSDHH))
 
 
 
@@ -193,30 +211,38 @@ secure_group <- secure_dep %>%
 secure_dep$FSDHH <- as.factor(secure_dep$FSDHH)
 secure_mod <- lm(dpq_sum ~ FSDHH, secure_dep)
 
-
-secure_group$FSDHH <- as.factor(secure_group$FSDHH)
-
 #final version
 
-secure_group %>%
+## CHRIS' COMMENT
+## coord_flip() can be bypassed these days with manually specifying the x and y.
+## Also, I assume you don't want the FSDHH == NA plotted, when I made the plot
+## it looked like a labeled "5" with no bar, so I filtered those for missingness 
+## in the mutate call.
+
+## One suggestion about color: 
+## This could be my eyes, but that light green is kind of hard to see. The 
+## darker green and blue are okay, but I have some trouble seeing that light green
+
+secure_group %>% 
   ggplot() +
-  geom_col(aes(FSDHH,dpq_group, fill = FSDHH), alpha = .8,
+  geom_col(aes(y = FSDHH, 
+               x = dpq_group, 
+               fill = FSDHH), 
+           alpha = .8,
            show.legend = F) +
-  geom_text(aes(FSDHH,dpq_group, label = paste0(round(dpq_group,2))), 
-            nudge_y = .4, size = 4)+
+  geom_text(aes(y = FSDHH, 
+                x = dpq_group, 
+                label = paste0(round(dpq_group,2))), 
+            nudge_x = .4, 
+            size = 4) +
   labs(x ="Level of Food Insercurity (per household)",
        y = "Average Depresive Symptomatology",
        title = "Depressive Symptoms by Food Security Level",
-       caption ="Data from the 2015 National Health and Nutrition Examination Survey")+
-  scale_x_discrete(breaks = c(1,2,3,4),
-                   labels = c("1" = "Full",
-                            "2" = "Marginal",
-                            "3" = "Low",
-                            "4" = "Very Low"))+
+       caption ="Data from the 2015 National Health and Nutrition Examination Survey") +
   scale_fill_brewer(palette = "Set3")+
-  theme_minimal()+
-  coord_flip()+
-  theme(panel.grid.major.x = element_blank())
+  theme_minimal(base_size = 18)+
+  theme(panel.grid.major.x = element_blank()) +
+  theme(plot.caption = element_text(size = 12))
 
 ```
 
@@ -236,8 +262,12 @@ secure_group %>%
 ### Continuing Draft
 
 ```{r v2secure}
+## CHRIS' COMMENT
+## See other edits above to the final draft
+
 #removing NA group
-secure_group <- secure_group[-5,]
+#secure_group <- secure_group[-5,]
+## I did this above for you via the %>% filter(!is.na(FSDHH))
 
 secure_group %>%
   ggplot() +
@@ -424,11 +454,14 @@ full_yr_grouped %>%
        color = "Food Security Level",
        caption = "Data from the National Health and Nutrition Examination Survey 2005-2015") +
   geom_text_repel(data = filter(full_yr_grouped, year == "2015"),
-            aes(y = ed_mean, label = FSDHH, color = FSDHH),show.legend = F,nudge_x = 5, segment.linetype = "dashed", segment.size = .2)+
-  theme_minimal()
-
+            aes(y = ed_mean, label = FSDHH, color = FSDHH),
+            show.legend = F,
+            nudge_x = 5, 
+            segment.linetype = "dashed", 
+            segment.size = .2) +
+  theme_minimal(base_size = 18) +
+  theme(plot.caption = element_text(size = 12))
 ```
-
 
 Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
@@ -561,10 +594,16 @@ long_plot <- long %>%
                                "Carb Restriction" = "freq8")) %>%
   drop_na()
 
+## CHRIS' COMMENT
+## I reorderd these so you are presenting rows in their (average) frequencies
+## I did the same for the facet_wrapping.
+## Maybe consider some font size changes;
+## I didn't think this was a good one to magnify all
+
 long_plot %>%
-  ggplot(aes(behavior, FSDHH)) +
+  ggplot(aes(behavior, fct_reorder(FSDHH, frequency))) +
   geom_tile(aes(fill = frequency), color = "white") +
-  facet_wrap(~RIDRETH3,nrow =3) +
+  facet_wrap(~fct_reorder(RIDRETH3, frequency), nrow = 3) +
   labs(x = "Disordered Eating Behavior",
        y = "Food Security Level",
        fill = "Frequency", 
@@ -574,7 +613,8 @@ long_plot %>%
   coord_flip()+
   scale_fill_viridis_c(option="magma", labels = scales::percent)+
   theme_minimal() +
-  theme(plot.caption.position = "plot")
+  theme(plot.caption.position = "plot") +
+  theme(plot.caption = element_text(size = 12))
 
 ```
 
@@ -611,7 +651,6 @@ long_plot %>%
   coord_flip()+
   theme_minimal()
 ```
-
 
 
 Fifth Visual
@@ -739,9 +778,8 @@ race_weight<- race_weight %>%
 
 race_weight_group <- race_weight %>%
   group_by(RIDRETH1, year) %>%
-  summarise(ed_mean_race = mean(ed_sum, na.rm = T))
-
-race_weight_group$RIDRETH1 <- as.factor(race_weight_group$RIDRETH1)
+  summarise(ed_mean_race = mean(ed_sum, na.rm = T)) %>% 
+  mutate(RIDRETH1 = factor(RIDRETH1))
 
 race_weight_labeled <- race_weight_group %>%
   mutate(RIDRETH1 = fct_recode(RIDRETH1, 
@@ -751,10 +789,11 @@ race_weight_labeled <- race_weight_group %>%
                   "Non-Hispanic Black" = "4",
                   "Other Race/Multiracial" = "5"),
          ed_mean_race = ed_mean_race/5)
+
 #final plot
 final_race_plot <- race_weight_labeled %>%
   ggplot(aes(year, ed_mean_race)) +
-  geom_point(aes(color = RIDRETH1), show.legend = F)+
+  geom_point(aes(color = RIDRETH1), show.legend = F) +
   geom_line(aes(color = RIDRETH1), show.legend = F) +
   scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
                      labels = c(2005,2007,2009,2011,2013,2015),
@@ -768,8 +807,15 @@ final_race_plot <- race_weight_labeled %>%
        title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
        subtitle = "by Racial Identity") +
   geom_text_repel(data = filter(race_weight_labeled, year == "2015"),
-            aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
-  theme_minimal()
+            aes(y = ed_mean_race, 
+                label = RIDRETH1, 
+                color = RIDRETH1),
+            show.legend = F,
+            nudge_x = 300, 
+            segment.linetype = "dashed", 
+            segment.size = .2) +
+  theme_minimal(base_size = 18) +
+  theme(plot.caption = element_text(size = 12))
 
 renderPlotly(final_race_plot)
 ```
@@ -787,7 +833,7 @@ race_weight_group %>%
        y = "Mean of Disordered Eating Symptoms")
 ```
 
-### Continuing Draft
+### Continuing Draft 
 
 ```{r v2plot5}
 
