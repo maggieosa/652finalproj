@@ -409,7 +409,7 @@ full_yr_grouped <- full_df %>%
                             "Very Low" = "4"),
          ed_mean = ed_mean/5)
 #final version
-full_yr_grouped %>%
+fv <- full_yr_grouped %>%
   ggplot(aes(year, ed_mean)) +
   geom_point(aes(color = FSDHH), show.legend = F)+
   geom_line(aes(color = FSDHH), show.legend = F)+
@@ -427,6 +427,8 @@ full_yr_grouped %>%
             aes(y = ed_mean, label = FSDHH, color = FSDHH),show.legend = F,nudge_x = 5, segment.linetype = "dashed", segment.size = .2)+
   theme_minimal()
 
+#just an example:
+ggplotly(fv, tooltip = c("FSDHH","year","ed_mean"))
 ```
 
 
