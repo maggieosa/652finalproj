@@ -60,7 +60,7 @@ dep_filtered <- dep %>%
   mutate(mean_dpq = mean(dpq))
 summary(dep_filtered$dif_weight)
 
-
+#Nice comments and pipes, always appreciate any improvements to readability!
 ```
 
 # Draft of First Plot 
@@ -70,11 +70,12 @@ summary(dep_filtered$dif_weight)
 dep_filtered %>%
   ggplot(aes(dif_weight,dpq)) +
   geom_col() +
-  scale_x_reverse()
+  scale_x_reverse() + #added a plus
     labs(x = "Desired Weight Loss Goal (in pounds)",
          y = "Depressive Symptoms",
-       title = "Depressive Symptoms",
+       title = "Depressive Symptoms For Women", # Hopefully this is whats intended 
        subtitle = "According to Desired Weight Loss")
+#Nice visually clear plot! I think its intended to show depressive symptoms for women and those with diff_weight values abouve 0? 
 ```
 # Continuing First Plot 
 
@@ -124,6 +125,7 @@ plot1_df %>%
        caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
   theme_minimal()
 
+#Great use of the margins and intervals! also appreciate the ease at which the relationship between severity of depressive symptoms and weightloss goals is visualized.
 
 ```
 
@@ -161,6 +163,9 @@ plot1_df %>%
        subtitle = "According to Desired Weight Loss",
        caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
   theme_minimal()
+
+#Great use of color in the error bars and the confidence interval destinction! Although I only see 3 error bars in the visualization when there is code for 4 (duplicate?)
+#I like the green blue color use but the lighter green color may be slightly hard to distinguish 
 ```
 
 
@@ -188,7 +193,7 @@ secure_group <- secure_dep %>%
   group_by(FSDHH) %>%
   summarise(dpq_group = mean(dpq_sum))
 
-
+#good use of spaceing, very helpful for following 
 
 #examining relationship
 secure_dep$FSDHH <- as.factor(secure_dep$FSDHH)
@@ -196,6 +201,8 @@ secure_mod <- lm(dpq_sum ~ FSDHH, secure_dep)
 summary(secure_mod)
 
 secure_group$FSDHH <- as.factor(secure_group$FSDHH)
+
+# I
 ```
 
 # Draft of Second Plot
@@ -265,6 +272,8 @@ secure_group %>%
   theme_minimal()+
   coord_flip()+
   theme(panel.grid.major.x = element_blank())
+
+#Great visualisation of relevant topics and use of spacing. Theres a foating number 5 but apologies I donot know if its from the breaks or labels(NA values maybe?) . The plot is super nice tho as it clearly distinguishes the levels of food insecurity clealy and floats the level specific depressive symptoms on the chart.
 
 
 ```
