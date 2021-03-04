@@ -3,6 +3,7 @@ title: "draft_final"
 author: "Maggie Head"
 date: "2/15/2021"
 output: html_document
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
@@ -786,13 +787,13 @@ race_weight_labeled %>%
 
 ```{r raceplot3_draft, echo=TRUE}
 
-race_weight_labeled %>%
+race_plot <- race_weight_labeled %>%
   ggplot(aes(year, ed_mean_race)) +
   geom_point(aes(color = RIDRETH1), show.legend = F)+
   geom_line(aes(color = RIDRETH1), show.legend = F) +
   scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
                      labels = c(2005,2007,2009,2011,2013,2015),
-                     limits = c(2005,2020))+
+                     limits = c(2005,2017))+
   scale_y_continuous(labels = scales::percent,
                      limits = c(0.1,0.22))+
   labs(x = "Year",
@@ -803,9 +804,12 @@ race_weight_labeled %>%
        subtitle = "by Racial Identity") +
   geom_text_repel(data = filter(race_weight_labeled, year == "2015"),
             aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
-  theme_minimal()
+  theme_minimal(base_size = 14) +
+  theme(plot.caption = element_text(size = 10))+
+  theme(axis.text=element_text(size=14))
 
 
+plotly::renderPlotly(race_plot)
 ```
 
 
