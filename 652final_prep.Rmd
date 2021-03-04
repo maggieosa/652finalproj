@@ -806,7 +806,10 @@ race_plot <- race_weight_labeled %>%
             aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
   theme_minimal(base_size = 14) +
   theme(plot.caption = element_text(size = 10))+
-  theme(axis.text=element_text(size=14))
+  theme(axis.text=element_text(size=14))+
+    theme(axis.title.y = 
+          element_text(margin = 
+                      margin(t = 0, r = 20, b = 0, l = 0)))
 
 
 plotly::renderPlotly(race_plot)
