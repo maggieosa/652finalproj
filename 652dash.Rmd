@@ -22,7 +22,11 @@ library(colorspace)
 library(ggrepel)
 library(plotly)
 library(colorblindr)
+library(ragg)
+
+knitr::opts_chunk$set(dev= "ragg_png")
 ```
+
 
 
 Sidebar {.sidebar}
@@ -64,6 +68,8 @@ The data for these visualizations were derived from the National Health and Nutr
 
 Body Image
 =========================
+
+
 
 
 Row {data-width=650}
@@ -164,7 +170,11 @@ plot1_df %>%
        subtitle = "According to Desired Weight Loss",
        caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
     theme_minimal(base_size = 16)+
-  theme(plot.caption = element_text(size = 10))
+  theme(plot.caption = element_text(size = 10))+
+  theme(text = element_text(family = "Pavanam"))+
+    theme(axis.title.y = 
+          element_text(margin = 
+                      margin(t = 0, r = 20, b = 0, l = 0)))
 ```
 
 Row {.tabset .tabset-fade data-width=350}
@@ -249,7 +259,7 @@ secure_group %>%
   geom_col(aes(FSDHH,dpq_group, fill = FSDHH), alpha = .8,
            show.legend = F) +
   geom_text(aes(FSDHH,dpq_group, label = paste0(round(dpq_group,2))), 
-            nudge_y = .4, size = 4)+
+            nudge_y = .4, size = 5)+
   labs(x ="Level of Food Insercurity (per household)",
        y = "Average Depresive Symptomatology",
        title = "Depressive Symptoms by Food Security Level",
@@ -263,7 +273,9 @@ secure_group %>%
   theme_minimal(base_size = 14)+
   coord_flip()+
   theme(panel.grid.major.x = element_blank())+
-  theme(plot.caption = element_text(size = 10))
+  theme(axis.ticks = element_line(size = .1, color="black"))+
+  theme(plot.caption.position = "plot") +
+  theme(plot.caption = element_text(size = 10, color = "#7A777C"))
 
 ```
 
@@ -309,12 +321,12 @@ secure_group %>%
 =========================
 
 
-Row {data-width=650}
+Row {data-width=700}
 -----------------------------------------------------------------------
 
 ### Final Visual
 
-```{r plot3final}
+```{r plot3final, fig.width=9}
 #data prep
 
 weight2003 <- here::here("data", "2003_weight_history.XPT") %>%
@@ -462,8 +474,9 @@ full_yr_grouped %>%
   geom_line(aes(color = FSDHH), show.legend = F)+
   scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
                      labels = c(2005,2007,2009,2011,2013,2015),
-                     limits = c(2005,2017.2))+
+                     limits = c(2005,2016.5))+
   scale_y_continuous(labels = scales::percent)+
+  scale_color_brewer(palette = "Dark2")+
   labs(x = "Year",
        y = "Proportion of Sample Engagement \nin Disordered Eating Symptoms(%)",
        title = "Trends in Disordered Eating Symptoms",
@@ -472,7 +485,15 @@ full_yr_grouped %>%
        caption = "Data from the National Health and Nutrition Examination Survey 2005-2015") +
   geom_text_repel(data = filter(full_yr_grouped, year == "2015"),
             aes(y = ed_mean, label = FSDHH, color = FSDHH),show.legend = F,nudge_x = 5, segment.linetype = "dashed", segment.size = .2)+
-  theme_minimal()
+    theme_minimal(base_size = 14) +
+  theme(plot.caption = element_text(size = 10))+
+  theme(axis.text=element_text(size=14))+
+  theme(axis.title.y = 
+          element_text(margin = 
+                      margin(t = 0, r = 20, b = 0, l = 0)))+
+  theme(plot.subtitle = element_text(margin = 
+                      margin(t = 0, r = 0, b = 20, l = 0)))+
+   theme(plot.caption = element_text(size = 10, color = "#7A777C"))
 
 ```
 
@@ -523,7 +544,7 @@ Row {data-width=650}
 
 ### Final Visual
 
-```{r plot4final}
+```{r plot4final, fig.width=9, fig.height=9}
 #data prep
 demo2015 <- here::here("data", "2015_demographics.XPT") %>%
   read_xpt()
@@ -608,21 +629,23 @@ long_plot <- long %>%
                                "Carb Restriction" = "freq8")) %>%
   drop_na()
 
+#plot
 long_plot %>%
   ggplot(aes(behavior, fct_reorder(FSDHH, frequency))) +
   geom_tile(aes(fill = frequency), color = "white") +
   facet_wrap(~fct_reorder(RIDRETH3, frequency), nrow = 3) + 
   labs(x = "Disordered Eating Behavior",
        y = "Food Security Level",
-       fill = "Frequency", 
-       title = "Frequency of Disordered Eating Behaviors",
+       fill = "Percentage", 
+       title = "Proportion of Sample Engagement in Disordered Eating Behaviors",
        subtitle = "According to Racial Identity and Food Security Level",
        caption = "Data from the 2015 National Health and Nutrition Examination Survey") +
   coord_flip()+
   scale_fill_viridis_c(option="magma", labels = scales::percent)+
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
   theme(plot.caption.position = "plot") +
-  theme(plot.caption = element_text(size = 12))
+  theme(plot.caption = element_text(size = 10, color = "#7A777C"))+
+  theme(axis.ticks = element_line(color = "black"))
 
 ```
 
@@ -800,7 +823,19 @@ race_weight_labeled <- race_weight_group %>%
                   "Other Race/Multiracial" = "5"),
          ed_mean_race = ed_mean_race/5)
 
-#final plot
+#reorder
+race_weight_labeled$RIDRETH1<- 
+  factor(race_weight_labeled$RIDRETH1,
+            levels = c("Non-Hispanic Black",
+                          "Other Hispanic",
+                          "Mexican American",
+                     "Non-Hispanic White",
+                   "Other Race/Multiracial")) 
+
+label <- "There is a widespread stereotype that non-Hispanic White women represent the majority of eating disorder cases. However, these data demonstrate that non-Hispanic Black women report the highest rates of disordered eating symptoms."
+
+####final plot#####
+
 final_race_plot <- race_weight_labeled %>%
   ggplot(aes(year, ed_mean_race)) +
   geom_point(aes(color = RIDRETH1, 
@@ -814,26 +849,44 @@ final_race_plot <- race_weight_labeled %>%
                      limits = c(0.1,0.22))+
   scale_color_OkabeIto() +
   labs(x = "Year",
-       y = "Percentage of Sample Engagement \nin Disordered Eating Symptoms\n                     ",
+       y = "Proportion of Sample Engagement \nin Disordered Eating Symptoms (%)\n                     ",
        color = "Racial Identity", 
        caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
        title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
        subtitle = "by Racial Identity") +
-  geom_text_repel(data = filter(race_weight_labeled, year == "2015"),
-            aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
   theme_minimal(base_size = 14) +
   theme(plot.caption = element_text(size = 10))+
   theme(axis.text=element_text(size=14))+
-  theme(axis.title.y = element_text(
-    margin = margin(t = 0, r = 0, b = 20, l = 0)))
+  theme(text = element_text(family = "Pavanam"))+
+  theme(plot.caption = element_text(size = 10, color = "#7A777C"))
+
 
 t <- list(
   family = "Overpass",
   color = 'black')
 
+a <- list(text = "non-Hispanic Black women \nreport the most disordered eating.",
+  xref = "x",
+  yref = 'y',
+  xanchor = 'right',
+  showarrow = TRUE,
+  arrowhead = 1,
+  arrowsize = 2,
+  arrowwidth=1,
+  yanchor = 'bottom',
+  x = 2015,
+  y = 0.21,
+  font = list(color = '#7A777C',
+              family = 'sans serif',
+                    size = 13))
+  
+
 final_race_plot <- ggplotly(final_race_plot,
                             tooltip = "text") %>%
-  layout(font=t)
+  layout(font=t, annotations = a, margin = list(l = 0, r = 0, b = 0, t = 100), yaxis = list(
+      title = list(text = "Percentage of Sample Engagement \nin Disordered Eating Symptoms", standoff = 25))) 
+
+
 
 
 
@@ -863,7 +916,6 @@ race_weight_labeled %>%
   geom_line(aes(color = RIDRETH1)) +
   scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
                      labels = c(2005,2007,2009,2011,2013,2015))+
-  scale_y_continuous(labels = scales::percent)+
   labs(x = "Year",
        y = "Mean of Disordered Eating Symptoms",
        color = "Racial Identity", 
@@ -898,28 +950,7 @@ race_weight_labeled %>%
   theme_minimal()
 ```
 
-### Another Draft
 
-```{r v4race}
 
-race_weight_labeled %>%
-  ggplot(aes(year, ed_mean_race)) +
-  geom_point(aes(color = RIDRETH1), show.legend = F)+
-  geom_line(aes(color = RIDRETH1), show.legend = F) +
-  scale_x_continuous(breaks = c(2005,2007,2009,2011,2013,2015),
-                     labels = c(2005,2007,2009,2011,2013,2015),
-                     limits = c(2005,2020))+
-  scale_y_continuous(labels = scales::percent,
-                     limits = c(0.1,0.22))+
-  labs(x = "Year",
-       y = "Percentage of Sample Engagement \nin Disordered Eating Symptoms",
-       color = "Racial Identity", 
-       caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
-       title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
-       subtitle = "by Racial Identity") +
-  geom_text_repel(data = filter(race_weight_labeled, year == "2015"),
-            aes(y = ed_mean_race, label = RIDRETH1, color = RIDRETH1),show.legend = F,nudge_x = 300, segment.linetype = "dashed", segment.size = .2)+
-  theme_minimal()
-```
 
 
