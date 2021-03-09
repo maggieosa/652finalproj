@@ -577,9 +577,8 @@ Row {data-width=1000}
 ### Chart Narrative: Third Visual 
 
 A leading aim of my research is a focus on structural and ecological contributors to disordered eating behaviors. Recent research suggests food security is associated with eating pathology (Becker et al., 2017). Thus, the purpose of this visualization was demonstrate disordered eating pathology across ten years according to level of food security.
-The first iteration of this graph was a simple plot of the average sample engagement in disordered eating behaviors within each food security group. Although I was successful in differntiating group differences according to color, a simple scatterplot rendered it impossible to clearly view the trends in disordered eating behaviors over time. Therefore, in the second version, I imposed lines using geom_line() on top of geom_point(). Prior to this class, I had very little experience with ggplot - so limited that I was unaware of the usefulness of employing multiple geom functions to show a relationship. The combination of points and lines significantly reduced cognitive load. 
-The final version of this graph heavily involved plot refinement. 
-
+The first iteration of this graph was a simple plot of the average sample engagement in disordered eating behaviors within each food security group. Although I was successful in differntiating group differences according to color, a simple scatterplot rendered it impossible to clearly view the trends in disordered eating behaviors over time. Therefore, in the second version, I imposed lines using geom_line() on top of geom_point(). Prior to this class, I had very little experience with ggplot - so limited that I was unaware of the usefulness of employing multiple geom functions to show a relationship. The combination of points and lines allows the viewer to easily trace the percentages across time within each food security group.
+The final version of this graph heavily involved plot refinement. For example, in the second version, the reader was forced to look back and forth from the lines to the legend to fully grasp the needed information. Geom_text_repel allowed me to remove the legend and subsequently reduce cognitive load. I also changed the colors to a recommended palette from scale_color_brewer and matched the labels to these colors as recommended during the lecture. However, as I was working on this plot, I realized that the segments pointing to the food security group lines appeared to be extensions of the data. Therefore, I changed the segments to a "dashed" line to clearly differentiate between the actual graph and the graph labels. The final plot can be used for scientific or popular media distribution, and clearly demonstrates that disordered eating is not a selective issue among affluent individuals. In fact, households with full food security show the lowest engagement in disordered eating symptoms.
 
 
 Race & Food Security
@@ -737,6 +736,13 @@ long_plot %>%
 ```
 
 
+Row {data-width=1000}
+-----------------------------------------------------------------------
+
+### Chart Narrative: Fourth Visual 
+
+The goal of this visualization was to display the engagement in disordered eating behaviors across both race and food security level. Intersectional frameworks are markedly absent from eating disorder research. Although this plot uses cross-sectional data, a heat map allows viewers to quickly identify areas of high engagement in disordered eating across intersectional groups.  
+To create this graph, I had to first create a dataset that would easily lend itself to a tile plot by pivoting longer. Although this seems like a simple task, I had significant struggles with pivoting during the first course of the sequence. This manipulation is honestly one of my greatest successes of this plot! The next step was a simple deployment of geom_tile(). The result was largely uninterpretable given (1) it was an extremely crowded layout and (2) the data values were meaningless. Therefore, important next steps were to recode the data to clearly show each disordered eating behavior and change the plot orientation. The coord_flip() argument was entirely new to me this term, but it made a notable difference in the visualization. As with other visuals, the final version of this plot involved significant plot refinement. For example, the default monochromatic color scheme for geom_tile() was replaced with the heat color palette "magma". I used the "scales" package to transform decimals into clear percentages that were easier to interpret. During the peer review process, I received a helpful comment from a classmate that the data might be better visualized by reordering the food security groups according to engagement in disordered eating behavior. The final version of the plot clearly communicates its intended message: disordered eating behaviors impact a multitude of people, with more similarities than differences across intersectional social categories. 
 
 Race & Disordered Eating
 =========================
@@ -955,8 +961,7 @@ Row {.tabset .tabset-fade data-width=350}
 race_weight_group %>%
   ggplot(aes(year, ed_mean_race)) +
   geom_line(aes(color = RIDRETH1)) +
-  labs(x = "Year",
-       y = "Mean of Disordered Eating Symptoms")
+  labs(x = "Year")
 ```
 
 ### Second Draft
@@ -1003,7 +1008,15 @@ race_weight_labeled %>%
   theme_minimal()
 ```
 
+Row {data-width=1000}
+-----------------------------------------------------------------------
 
+### Chart Narrative: Fifth Visual 
 
+Historically, disordered eating was considered a problem selectively afflicting White individuals. As a result, studies examining disordered eating have predominantly used sample of White women while disregarding the struggles of Black women's eating problems. The goal of this plot was to communicate the rising rates of disordered eating across racial identities within a 10-year time period.
+The first version of this plot used a simple line graph with the year on the x-axis and percentage of engagement in disordered eating on the y-axis. Given that ggplot pulls information from variables in the dataset, this version of the plot lacked communicability. Without access to the codebook, "RIDRETH" and "ed_mean_race" provide zero insight into the group trends of disordered eating over time. 
+The second version of the plot imposed group data points onto the lines, allowing the viewer to estimate actual values for each group on a given year. I also recoded variables to increase interpretability by providing informative x and y-axes as well as a legend and title. I once again used the scales package to convert engagement in disordered eating symptoms to a percentage, making it easier for a lay audience to understand. 
+However, an important lesson I learned during the course of this class was the importance of using titles and labels that provide viewers with all the information they need to understand the message and findings of the plot without having to dive into the research itself. Thus, I provided a clear metric on the y-axis for the third version and once again used geom_text_repel to reduce cognitive load. Subsequently, this graph avoids the need to thoroughly evaluate the data to understand the results. 
+For the final version of this plot, I wanted to blend my greatest passions: highlighting the need for disordered eating intervention in underrepresented populations (e.g., women of color) and science communication for the purpose of widespread education. To my first point, I used a plotly annotation to emphasize that Black women reported the highest engagement in disordered eating symptoms in 2015. Plotly requires a very specific annotation style, so this required a great deal of time. To my second point, I made two deliberate choices to enhance the ease of communication for a lay audience. First, I used plotly to make the graph interactive. I have noticed many times over this term that interactivity significantly strengthens viewers' interest in the data. By using plotly and recoding the hover text into clear variables, a lay audience can easily see and understand group differences and actual data values. I also used scale_color_OkabeIto() as my discrete color values so that this plot is comprehensible for individuals that are colorblind. The final message of this plot is clear: Black lives matter; Black women are not immune to disordered eating; and, importantly, Black women's health matters and deserves recognition, attention, and care. 
 
 
