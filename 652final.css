@@ -1,68 +1,61 @@
-                   
+@import url('https://fonts.googleapis.com/css2?family=Domine&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arapey&family=Caladea&family=Domine&family=Sorts+Mill+Goudy&display=swap');
+
 div.navbar-header {
   background-color:#e7ddf8;
   border-color:black;
   padding-bottom: .5px;
   font-size: 24px;
 }
-div.container-fluid {
-  background-color:#e7ddf8;
-  border-color:black;
-}
-div#navbar.navbar-collapse.collapse {
-  background-color:#e7ddf8;
-  border-color:black;
-}
 .navbar-brand {
 color:black!important;
-background-color:#e7ddf8;
 }
-.nav-tabs-custom > .nav-tabs > li.active {border-top-color: #623b7c;
+.nav-tabs-custom > .nav-tabs > li.active {border-top-color: #341161;
 }
 .section.sidebar {
   top: 120px;
 }
-
+div#navbar.navbar-collapse.collapse {
+  background-color:#e7ddf8;
+  border-color:black;
+  padding-bottom: .5px;
+}
+div.container-fluid {
+  background-color:#e7ddf8;
+  border-color:black;
+  padding-bottom: .5px;
+}
 @media (max-width: 975px) {
     .navbar-header {
-      background-color:#e7ddf8;
         float: none;
     }
     .navbar-left,.navbar-right {
         float: none !important;
-        background-color:#e7ddf8;
     }
     .navbar-toggle {
         display: block;
-        background-color:#e7ddf8;
     }
     .navbar-collapse {
         border-top: 1px solid transparent;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
-        background-color:#e7ddf8;
     }
     .navbar-fixed-top {
 top: 0;
 border-width: 0 0 1px;
-background-color:#e7ddf8;
 }
     .navbar-collapse.collapse {
         display: none!important;
-        background-color:#e7ddf8;
     }
     .navbar-nav {
         float: none!important;
 margin-top: 7.5px;
-background-color:#e7ddf8;
 }
 .navbar-nav>li {
         float: none;
-        background-color:#e7ddf8;
     }
     .navbar-nav>li>a {
         padding-top: 10px;
         padding-bottom: 10px;
-        background-color:#e7ddf8;
     }
     .collapse.in{
   display:block !important;
@@ -103,3 +96,13 @@ body {
   }
 }
   
+.attention {
+  border: 1px solid #f7f0f0;
+  border-radius: 10px;
+  background-color: #e7ddf8;
+  font-size: 14px;
+  font-family: 'Arapey', serif;
+  color: rgb(0, 0, 0);
+  text-align: left;
+  padding: 5px;
+}

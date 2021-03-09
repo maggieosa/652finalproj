@@ -164,11 +164,12 @@ plot1_df %>%
                 height = 0.2,
                 size = 1.1) +
   geom_point() +
-  labs(x = "Severity of Depressive Symptomatology",
+  labs(x = "Average Depressive Symptomology",
          y = "Desired Weight Loss Goal (in pounds)",
        title = "Depressive Symptoms",
        subtitle = "According to Desired Weight Loss",
-       caption = "Data from the 2011 National Health and Nutrition Examination Survey") +
+       caption = expression(
+      atop(italic(Note.)~ "Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.","Data from the 2011 National Health and Nutrition Examination Survey"))) +
     theme_minimal(base_size = 16)+
   theme(plot.caption = element_text(size = 10))+
   theme(text = element_text(family = "Pavanam"))+
@@ -176,6 +177,16 @@ plot1_df %>%
           element_text(margin = 
                       margin(t = 0, r = 20, b = 0, l = 0)))
 ```
+
+Row {.tabset .tabset-fade data-width=350, data-height=110}
+----------------------------------------------------------------------
+:::attention
+
+Participants were asked to report their actual weight and ideal weight. Desired weight loss was calculated as the difference between these two numbers. Of female participants, less than 1% reported a desired increase in weight; thus, they were excluded from the analysis. Desired weight loss was recoded as factor levels. Points represent average depression scores from a standardized depression screener. The blue bar represents standard errors around the mean, with magenta and green bars representing the 95% and 90% confidence intervals, respectively. 
+
+:::
+
+
 
 Row {.tabset .tabset-fade data-width=350}
 -----------------------------------------------------------------------
@@ -199,8 +210,7 @@ dep_filtered %>%
 plot1_df %>%
   ggplot(aes(group_dpq, dif_weight_fct)) +
   geom_errorbarh(aes(xmin =  group_dpq - 1.96*group_se,
-     xmax = group_dpq+ 1.96*group_se),
-     height = .5) +
+     xmax = group_dpq+ 1.96*group_se)) +
   geom_point() +
   labs(x = "Severity of Depressive Symptomatology",
          y = "Desired Weight Loss Goal (in pounds)",
@@ -210,18 +220,26 @@ plot1_df %>%
   theme_minimal()
 ```
 
+Row {data-width=1000}
+-----------------------------------------------------------------------
+### Chart Narrative: First Visual 
+
+The perceived discrepancy between one's actual appearance and their ideal appearance (i.e., actual-ideal discrepancy) is a key facet of body dissatisfaction and negative affect among female adolescents and adults (Vatanian, 2012). Thus, I sought to visualize the relationship between actual-ideal discrepancy and depressive symptoms using participants' reported weights and their ideal weights. I started with a simple bar chart to visualize the distribution of desired weight loss, which was calculated as the difference score between their actual weight and ideal weight. However, this revealed a clear issue with the data manipulation. Without aggregating across participants with similar weight loss goals, the bar chat simply stacked each participant's data on top of one another into a count format. 
+As a result, I converted the actual-ideal discrepancy variable into factor. With the new limited groupings, it became clear that averaged depressive symptoms could be best visualized with means and standard errors. This visualization can be seen in the second version. 
+Given the target audience for this particular plot was a scientific audience, I then employed multiple error bars to represent the standard error as well as 90% and 95% confidence intervals. Inclusion of all three error bars clearly displays the spread of the data according to a spectrum of uncertainty, which is particularly important considering there were over 1000 participants included in this analysis. In the final draft, I also added several elements from class lectures to enhance optimal visual perception. For example, the second version of this plot had large error bar heights. This was distracting, and also looked like a never before seen episode of Star Wars involving X-wings. I decreased the error bar height. Likewise, the second version plot area was extremely crowded, so I increased the margins to enhance readability. Although not seen in the dashboard, my original color choices, which was a monochromatic hue lightened across the error bars. I received helpful peer review comments suggesting I change to divergent color choices to clearly differentiate each bar. An additional revision was the inclusion of a caption so that readers would not have to search through the accompanying "research article" to understand the operational definition of the average depression scores as measured in the study.
+
 
 Food Security
 =========================
 
 
-Row {data-width=650}
+Row {data-width=700}
 -----------------------------------------------------------------------
 
 
 ### Final Visual
 
-```{r plot2final}
+```{r plot2final, fig.width=7}
 #data prep
 secure2015 <- here::here("data", "2015_food_security.XPT") %>%
   read_xpt()
@@ -260,22 +278,35 @@ secure_group %>%
            show.legend = F) +
   geom_text(aes(FSDHH,dpq_group, label = paste0(round(dpq_group,2))), 
             nudge_y = .4, size = 5)+
-  labs(x ="Level of Food Insercurity (per household)",
-       y = "Average Depresive Symptomatology",
+  labs(x ="Level of Food Sercurity (per household)",
+       y = "Average Depressive Symptomatology",
        title = "Depressive Symptoms by Food Security Level",
-       caption ="Data from the 2015 National Health and Nutrition Examination Survey")+
+       caption = expression(
+      atop(italic(Note.)~ "Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.","Data from the 2011 National Health and Nutrition Examination Survey"))) +
   scale_x_discrete(breaks = c(1,2,3,4),
                    labels = c("1" = "Full",
                             "2" = "Marginal",
                             "3" = "Low",
                             "4" = "Very Low"))+
+  scale_y_continuous(minor_breaks = c(0,2,4,6,8),
+                     expand = c(0,0),
+                     limits = c(0,9),
+                     breaks = c(0,2,4,6,8))+
   scale_fill_brewer(palette = "Set3")+
   theme_minimal(base_size = 14)+
   coord_flip()+
-  theme(panel.grid.major.x = element_blank())+
+  theme(panel.grid.major.y = element_blank())+
   theme(axis.ticks = element_line(size = .1, color="black"))+
+  theme(axis.text.x = element_text(size = 15))+
   theme(plot.caption.position = "plot") +
-  theme(plot.caption = element_text(size = 10, color = "#7A777C"))
+  theme(plot.caption = element_text(size = 10, color = "#7A777C"))+
+  theme(axis.title.y = 
+          element_text(margin = 
+                      margin(t = 0, r = 20, b = 0, l = 0)))+
+  theme(axis.title.x = 
+          element_text(margin = 
+                      margin(t = 10, r = 0, b = 0, l = 0)))
+
 
 ```
 
@@ -316,6 +347,14 @@ secure_group %>%
   theme(panel.grid.major.x = element_blank())
 ```
 
+
+Row {data-width=1000}
+-----------------------------------------------------------------------
+### Chart Narrative: Second Visual 
+
+Food security is considered an important social determinant of physical health (Friel & Ford, 2015); however, its associations with mental health are understudied. Thus, the purpose of this visual was to demonstrate the severity of depressive symptoms according to level of food security. 
+Intended for both scientific and lay audiences, the progression of this visualization is fairly straightforward. Of note, the first version of this plot revealed 5 categories. In other words, the chart included participants who did not respond to the food security questionnaire but did complete the depression screener. Food security was also clearly coded with numerical dummy code to represent categories. In the second version, I removed all participants with NA values on the food security questionnaire. I then converted the food security variable to a factor with new labels clearly denoting each level. I also used scale_color_brewer to choose a color combination that enhanced visual perception for discrete categories.
+For the final visualization, I flipped the axes of the chart. As a researcher, I am used to seeing bar charts as histograms - meaning they visualize count data or distributions of normality. In my eyes, flipping the axes deviated from the traditional presentation of the bar chart, and therefore forces the reader to understand the presented relationship between the variables as opposed to counts. Finally, one component of plot refinement in ggplot that stood out to me this term was the simple addition of number annotations with bar charts. Direct labeling of the means quickly communicates group differences for academic and lay audiences without having to closely inspect distance among the top of the bars.
 
 10-year Food Security
 =========================
@@ -532,6 +571,14 @@ full_yr_grouped %>%
 
 ```
 
+Row {data-width=1000}
+-----------------------------------------------------------------------
+
+### Chart Narrative: Third Visual 
+
+A leading aim of my research is a focus on structural and ecological contributors to disordered eating behaviors. Recent research suggests food security is associated with eating pathology (Becker et al., 2017). Thus, the purpose of this visualization was demonstrate disordered eating pathology across ten years according to level of food security.
+The first iteration of this graph was a simple plot of the average sample engagement in disordered eating behaviors within each food security group. Although I was successful in differntiating group differences according to color, a simple scatterplot rendered it impossible to clearly view the trends in disordered eating behaviors over time. Therefore, in the second version, I imposed lines using geom_line() on top of geom_point(). Prior to this class, I had very little experience with ggplot - so limited that I was unaware of the usefulness of employing multiple geom functions to show a relationship. The combination of points and lines significantly reduced cognitive load. 
+The final version of this graph heavily involved plot refinement. 
 
 
 
@@ -645,7 +692,13 @@ long_plot %>%
   theme_minimal(base_size = 14) +
   theme(plot.caption.position = "plot") +
   theme(plot.caption = element_text(size = 10, color = "#7A777C"))+
-  theme(axis.ticks = element_line(color = "black"))
+  theme(axis.ticks = element_line(color = "black"))+
+  theme(axis.title.y = 
+          element_text(margin = 
+                      margin(t = 0, r = 15, b = 0, l = 0)))+
+   theme(axis.title.x = 
+          element_text(margin = 
+                      margin(t = 15, r = 0, b = 0, l = 0)))
 
 ```
 
@@ -865,7 +918,7 @@ t <- list(
   family = "Overpass",
   color = 'black')
 
-a <- list(text = "non-Hispanic Black women \nreport the most disordered eating.",
+a <- list(text = "Black women report \nthe most disordered eating.",
   xref = "x",
   yref = 'y',
   xanchor = 'right',
@@ -884,7 +937,7 @@ a <- list(text = "non-Hispanic Black women \nreport the most disordered eating."
 final_race_plot <- ggplotly(final_race_plot,
                             tooltip = "text") %>%
   layout(font=t, annotations = a, margin = list(l = 0, r = 0, b = 0, t = 100), yaxis = list(
-      title = list(text = "Percentage of Sample Engagement \nin Disordered Eating Symptoms", standoff = 25))) 
+      title = list(text = "Proportion of Subsample Engagement \nin Disordered Eating Symptoms (%)", standoff = 25))) 
 
 
 
@@ -940,7 +993,7 @@ race_weight_labeled %>%
   scale_y_continuous(labels = scales::percent,
                      limits = c(0.1,0.22))+
   labs(x = "Year",
-       y = "Percentage of Sample Engagement \nin Disordered Eating Symptoms",
+       y = "Proportion of Sample Engagement \nin Disordered Eating Symptoms (%)",
        color = "Racial Identity", 
        caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
        title = "Population Trends in Disordered Eating Symptoms Over 10 Years",
