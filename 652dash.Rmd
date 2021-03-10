@@ -61,9 +61,23 @@ knitr::include_graphics("1504865489164-Fin-Illustration.png")
 
 Row {data-width=1000}
 -----------------------------------------------------------------------
-### Disordered Eating: An Epidemic in the United States
+### __Disordered Eating: An Epidemic in the United States__
 
-The data for these visualizations were derived from the National Health and Nutrition Examination Surveys (2005-2015). The National Health and Nutrition Examination Survey (NHANES) is a program of studies designed to assess the health and nutritional status of adults and children in the United States. The survey combines interviews and physical examinations. NHANES is a major program of the National Center for Health Statistics (NCHS); NCHS is part of the Centers for Disease Control and Prevention (CDC). Data regarding disordered eating behaviors were derived from interview questions asking adult participants if they had sought weight loss within the last year. Response options were "Yes" or "No". Positive responses were qualified by methods used to lose weight, with engagement in a particular disordered eating behavior coded as "1" and non-engagement as "0".
+The data for these visualizations were derived from the National Health and Nutrition Examination Surveys (2005-2015). The National Health and Nutrition Examination Survey (NHANES) is a program of studies designed to assess the health and nutritional status of adults and children in the United States. The survey combines interviews and physical examinations. NHANES is a major program of the National Center for Health Statistics (NCHS); NCHS is part of the Centers for Disease Control and Prevention (CDC). Data regarding disordered eating behaviors were derived from interview questions asking adult participants if they had sought weight loss within the last year. Response options were "Yes" or "No". Positive responses were qualified by methods used to lose weight, with engagement in a particular disordered eating behavior coded as "1" and non-engagement as "0". 
+
+Row {data-width=1000}
+-----------------------------------------------------------------------
+
+### References
+
+Becker, C. B., Middlemass, K., Taylor, B., Johnson, C., & Gomez, F. (2017). Food insecurity and eating disorder pathology. _The International Journal of Eating Disorders_, _50_(9), 1031–1040. https://doi.org/10.1002/eat.22735    
+
+Friel, S., & Ford, L. (2015). Systems, food security and human health. _Food Security_, 7, 437–451. https://doi.org/10.1007/s12571-015-0433-1     
+
+United States Department of Health and Human Services. Centers for Disease Control and Prevention. National Center for Health Statistics. National Health and Nutrition Examination Survey (NHANES), 2007-2008. Ann Arbor, MI: Inter-university Consortium for Political and Social Research [distributor], 2012-02-22. https://doi.org/10.3886/ICPSR25505.v3           
+
+Vartanian, L. (2012). Self-Discrepancy Theory and Body Image. _Encyclopedia of Body Image and Human Appearance_, 2, 711–717. https://doi.org/10.1016/B978-0-12-384925-0.00112-7        
+
 
 
 Body Image
@@ -152,12 +166,12 @@ plot1_df %>%
                     xmax = group_dpq + qnorm(.975)*group_se),
                 color = "cyan4",
                 height = 0.2,
-                size = 0.5) + # 95% CI
+                size = 0.5) + 
   geom_errorbarh(aes(xmin = group_dpq + qnorm(.05)*group_se,
                     xmax = group_dpq + qnorm(.95)*group_se),
                 color = lighten("magenta4", .1),
                 height = 0.2,
-                size = 0.8) + # 90% CI
+                size = 0.8) + 
   geom_errorbarh(aes(xmin = group_dpq + qnorm(.1)*group_se,
                     xmax = group_dpq + qnorm(.9)*group_se),
                 color = "darkolivegreen3",
@@ -166,7 +180,7 @@ plot1_df %>%
   geom_point() +
   labs(x = "Average Depressive Symptomology",
          y = "Desired Weight Loss Goal (in pounds)",
-       title = "Depressive Symptoms",
+       title = "Depressive Symptoms in Women",
        subtitle = "According to Desired Weight Loss",
        caption = expression(
       atop(italic(Note.)~ "Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.","Data from the 2011 National Health and Nutrition Examination Survey"))) +
@@ -182,7 +196,7 @@ Row {.tabset .tabset-fade data-width=350, data-height=110}
 ----------------------------------------------------------------------
 :::attention
 
-Participants were asked to report their actual weight and ideal weight. Desired weight loss was calculated as the difference between these two numbers. Of female participants, less than 1% reported a desired increase in weight; thus, they were excluded from the analysis. Desired weight loss was recoded as factor levels. Points represent average depression scores from a standardized depression screener. The blue bar represents standard errors around the mean, with magenta and green bars representing the 95% and 90% confidence intervals, respectively. 
+Participants were asked to report their actual weight and ideal weight. Desired weight loss was calculated as the difference between these two numbers. Of female participants, less than 1% reported a desired increase in weight; thus, they were excluded from the analysis. Points represent average depression scores from a standardized depression screener. The blue bar represents 95% confidence interval, with magenta and green bars representing the 90% and 80% confidence intervals, respectively. 
 
 :::
 
@@ -224,8 +238,9 @@ Row {data-width=1000}
 -----------------------------------------------------------------------
 ### Chart Narrative: First Visual 
 
-The perceived discrepancy between one's actual appearance and their ideal appearance (i.e., actual-ideal discrepancy) is a key facet of body dissatisfaction and negative affect among female adolescents and adults (Vatanian, 2012). Thus, I sought to visualize the relationship between actual-ideal discrepancy and depressive symptoms using participants' reported weights and their ideal weights. I started with a simple bar chart to visualize the distribution of desired weight loss, which was calculated as the difference score between their actual weight and ideal weight. However, this revealed a clear issue with the data manipulation. Without aggregating across participants with similar weight loss goals, the bar chat simply stacked each participant's data on top of one another into a count format. 
-As a result, I converted the actual-ideal discrepancy variable into factor. With the new limited groupings, it became clear that averaged depressive symptoms could be best visualized with means and standard errors. This visualization can be seen in the second version. 
+The perceived discrepancy between one's actual appearance and their ideal appearance (i.e., actual-ideal discrepancy) is a key facet of body dissatisfaction and negative affect among female adolescents and adults (Vartanian, 2012). Thus, I sought to visualize the relationship between actual-ideal discrepancy and depressive symptoms using participants' reported weights and their ideal weights. I started with a simple bar chart to visualize the distribution of desired weight loss, which was calculated as the difference score between their actual weight and ideal weight. However, this revealed a clear issue with the data manipulation. Without aggregating across participants with similar weight loss goals, the bar chat simply stacked each participant's data on top of one another into a count format. 
+As a result, I converted the actual-ideal discrepancy variable into factor. With the new limited groupings, it became clear that averaged depressive symptoms could be best visualized with means and standard errors. This visualization can be seen in the second version.       
+
 Given the target audience for this particular plot was a scientific audience, I then employed multiple error bars to represent the standard error as well as 90% and 95% confidence intervals. Inclusion of all three error bars clearly displays the spread of the data according to a spectrum of uncertainty, which is particularly important considering there were over 1000 participants included in this analysis. In the final draft, I also added several elements from class lectures to enhance optimal visual perception. For example, the second version of this plot had large error bar heights. This was distracting, and also looked like a never before seen episode of Star Wars involving X-wings. I decreased the error bar height. Likewise, the second version plot area was extremely crowded, so I increased the margins to enhance readability. Although not seen in the dashboard, my original color choices, which was a monochromatic hue lightened across the error bars. I received helpful peer review comments suggesting I change to divergent color choices to clearly differentiate each bar. An additional revision was the inclusion of a caption so that readers would not have to search through the accompanying "research article" to understand the operational definition of the average depression scores as measured in the study.
 
 
@@ -353,7 +368,9 @@ Row {data-width=1000}
 ### Chart Narrative: Second Visual 
 
 Food security is considered an important social determinant of physical health (Friel & Ford, 2015); however, its associations with mental health are understudied. Thus, the purpose of this visual was to demonstrate the severity of depressive symptoms according to level of food security. 
-Intended for both scientific and lay audiences, the progression of this visualization is fairly straightforward. Of note, the first version of this plot revealed 5 categories. In other words, the chart included participants who did not respond to the food security questionnaire but did complete the depression screener. Food security was also clearly coded with numerical dummy code to represent categories. In the second version, I removed all participants with NA values on the food security questionnaire. I then converted the food security variable to a factor with new labels clearly denoting each level. I also used scale_color_brewer to choose a color combination that enhanced visual perception for discrete categories.
+Intended for both scientific and lay audiences, the progression of this visualization is fairly straightforward. Of note, the first version of this plot revealed 5 categories. In other words, the chart included participants who did not respond to the food security questionnaire but did complete the depression screener. Food security was also clearly coded with numerical dummy code to represent categories. In the second version, I removed all participants with NA values on the food security questionnaire. I then converted the food security variable to a factor with new labels clearly denoting each level. I also used scale_color_brewer to choose a color combination that enhanced visual perception for discrete categories.     
+
+
 For the final visualization, I flipped the axes of the chart. As a researcher, I am used to seeing bar charts as histograms - meaning they visualize count data or distributions of normality. In my eyes, flipping the axes deviated from the traditional presentation of the bar chart, and therefore forces the reader to understand the presented relationship between the variables as opposed to counts. Finally, one component of plot refinement in ggplot that stood out to me this term was the simple addition of number annotations with bar charts. Direct labeling of the means quickly communicates group differences for academic and lay audiences without having to closely inspect distance among the top of the bars.
 
 10-year Food Security
@@ -519,7 +536,7 @@ full_yr_grouped %>%
   labs(x = "Year",
        y = "Proportion of Sample Engagement \nin Disordered Eating Symptoms(%)",
        title = "Trends in Disordered Eating Symptoms",
-       subtitle = "According to Food Security Level",
+       subtitle = "According to Food Security Level (per household)",
        color = "Food Security Level",
        caption = "Data from the National Health and Nutrition Examination Survey 2005-2015") +
   geom_text_repel(data = filter(full_yr_grouped, year == "2015"),
@@ -577,7 +594,9 @@ Row {data-width=1000}
 ### Chart Narrative: Third Visual 
 
 A leading aim of my research is a focus on structural and ecological contributors to disordered eating behaviors. Recent research suggests food security is associated with eating pathology (Becker et al., 2017). Thus, the purpose of this visualization was demonstrate disordered eating pathology across ten years according to level of food security.
-The first iteration of this graph was a simple plot of the average sample engagement in disordered eating behaviors within each food security group. Although I was successful in differntiating group differences according to color, a simple scatterplot rendered it impossible to clearly view the trends in disordered eating behaviors over time. Therefore, in the second version, I imposed lines using geom_line() on top of geom_point(). Prior to this class, I had very little experience with ggplot - so limited that I was unaware of the usefulness of employing multiple geom functions to show a relationship. The combination of points and lines allows the viewer to easily trace the percentages across time within each food security group.
+The first iteration of this graph was a simple plot of the average sample engagement in disordered eating behaviors within each food security group. Although I was successful in differntiating group differences according to color, a simple scatterplot rendered it impossible to clearly view the trends in disordered eating behaviors over time. Therefore, in the second version, I imposed lines using geom_line() on top of geom_point(). Prior to this class, I had very little experience with ggplot - so limited that I was unaware of the usefulness of employing multiple geom functions to show a relationship. The combination of points and lines allows the viewer to easily trace the percentages across time within each food security group.   
+
+
 The final version of this graph heavily involved plot refinement. For example, in the second version, the reader was forced to look back and forth from the lines to the legend to fully grasp the needed information. Geom_text_repel allowed me to remove the legend and subsequently reduce cognitive load. I also changed the colors to a recommended palette from scale_color_brewer and matched the labels to these colors as recommended during the lecture. However, as I was working on this plot, I realized that the segments pointing to the food security group lines appeared to be extensions of the data. Therefore, I changed the segments to a "dashed" line to clearly differentiate between the actual graph and the graph labels. The final plot can be used for scientific or popular media distribution, and clearly demonstrates that disordered eating is not a selective issue among affluent individuals. In fact, households with full food security show the lowest engagement in disordered eating symptoms.
 
 
@@ -741,7 +760,9 @@ Row {data-width=1000}
 
 ### Chart Narrative: Fourth Visual 
 
-The goal of this visualization was to display the engagement in disordered eating behaviors across both race and food security level. Intersectional frameworks are markedly absent from eating disorder research. Although this plot uses cross-sectional data, a heat map allows viewers to quickly identify areas of high engagement in disordered eating across intersectional groups.  
+The goal of this visualization was to display the engagement in disordered eating behaviors across both race and food security level. Intersectional frameworks are markedly absent from eating disorder research. Although this plot uses cross-sectional data, a heat map allows viewers to quickly identify areas of high engagement in disordered eating across intersectional groups.    
+
+
 To create this graph, I had to first create a dataset that would easily lend itself to a tile plot by pivoting longer. Although this seems like a simple task, I had significant struggles with pivoting during the first course of the sequence. This manipulation is honestly one of my greatest successes of this plot! The next step was a simple deployment of geom_tile(). The result was largely uninterpretable given (1) it was an extremely crowded layout and (2) the data values were meaningless. Therefore, important next steps were to recode the data to clearly show each disordered eating behavior and change the plot orientation. The coord_flip() argument was entirely new to me this term, but it made a notable difference in the visualization. As with other visuals, the final version of this plot involved significant plot refinement. For example, the default monochromatic color scheme for geom_tile() was replaced with the heat color palette "magma". I used the "scales" package to transform decimals into clear percentages that were easier to interpret. During the peer review process, I received a helpful comment from a classmate that the data might be better visualized by reordering the food security groups according to engagement in disordered eating behavior. The final version of the plot clearly communicates its intended message: disordered eating behaviors impact a multitude of people, with more similarities than differences across intersectional social categories. 
 
 Race & Disordered Eating
@@ -1015,7 +1036,9 @@ Row {data-width=1000}
 
 Historically, disordered eating was considered a problem selectively afflicting White individuals. As a result, studies examining disordered eating have predominantly used sample of White women while disregarding the struggles of Black women's eating problems. The goal of this plot was to communicate the rising rates of disordered eating across racial identities within a 10-year time period.
 The first version of this plot used a simple line graph with the year on the x-axis and percentage of engagement in disordered eating on the y-axis. Given that ggplot pulls information from variables in the dataset, this version of the plot lacked communicability. Without access to the codebook, "RIDRETH" and "ed_mean_race" provide zero insight into the group trends of disordered eating over time. 
-The second version of the plot imposed group data points onto the lines, allowing the viewer to estimate actual values for each group on a given year. I also recoded variables to increase interpretability by providing informative x and y-axes as well as a legend and title. I once again used the scales package to convert engagement in disordered eating symptoms to a percentage, making it easier for a lay audience to understand. 
+The second version of the plot imposed group data points onto the lines, allowing the viewer to estimate actual values for each group on a given year. I also recoded variables to increase interpretability by providing informative x and y-axes as well as a legend and title. I once again used the scales package to convert engagement in disordered eating symptoms to a percentage, making it easier for a lay audience to understand.    
+
+
 However, an important lesson I learned during the course of this class was the importance of using titles and labels that provide viewers with all the information they need to understand the message and findings of the plot without having to dive into the research itself. Thus, I provided a clear metric on the y-axis for the third version and once again used geom_text_repel to reduce cognitive load. Subsequently, this graph avoids the need to thoroughly evaluate the data to understand the results. 
 For the final version of this plot, I wanted to blend my greatest passions: highlighting the need for disordered eating intervention in underrepresented populations (e.g., women of color) and science communication for the purpose of widespread education. To my first point, I used a plotly annotation to emphasize that Black women reported the highest engagement in disordered eating symptoms in 2015. Plotly requires a very specific annotation style, so this required a great deal of time. To my second point, I made two deliberate choices to enhance the ease of communication for a lay audience. First, I used plotly to make the graph interactive. I have noticed many times over this term that interactivity significantly strengthens viewers' interest in the data. By using plotly and recoding the hover text into clear variables, a lay audience can easily see and understand group differences and actual data values. I also used scale_color_OkabeIto() as my discrete color values so that this plot is comprehensible for individuals that are colorblind. The final message of this plot is clear: Black lives matter; Black women are not immune to disordered eating; and, importantly, Black women's health matters and deserves recognition, attention, and care. 
 
