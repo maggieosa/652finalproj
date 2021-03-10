@@ -39,7 +39,8 @@ Sidebar {.sidebar}
 **Data Source**
 
 
-Access to these data provided by Inter-university Consortium for Political and Social Research (ICPSR). Additional details on methodology can be found at the [ICPSR website](https://www.icpsr.umich.edu/web/ICPSR/series/39) and the [CDC website](https://wwwn.cdc.gov/nchs/nhanes/Default.aspx).
+Access to these data provided by Inter-university Consortium for Political and Social Research (ICPSR).      
+Additional details on methodology can be found at the [ICPSR website](https://www.icpsr.umich.edu/web/ICPSR/series/39) and the [CDC website](https://wwwn.cdc.gov/nchs/nhanes/Default.aspx).
 
 
 **Analytics**
