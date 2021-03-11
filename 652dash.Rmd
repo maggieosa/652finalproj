@@ -1,5 +1,5 @@
 ---
-title: "U.S. Population Trends in Disordered Eating and Body Image"
+title: "U.S. Population Trends in Disordered Eating, Food Security, and Body Image"
 runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
@@ -23,6 +23,7 @@ library(ggrepel)
 library(plotly)
 library(colorblindr)
 library(ragg)
+library(ggpubr)
 
 knitr::opts_chunk$set(dev= "ragg_png")
 ```
@@ -91,7 +92,7 @@ Row {data-width=650}
 
 ### Final Visual
 
-```{r plot1}
+```{r plot1, , fig.width=7}
 #dataprep
 weight2011 <- here::here("data", "2011_weight_history.XPT") %>%
   read_xpt()
@@ -156,7 +157,7 @@ plot1_df <-dep_lev %>%
             group_se = sd(dpq)/sqrt(n()))
 
 ####FINAL VISUALIZATION###
-plot1_df %>%
+fig1 <- plot1_df %>%
   ggplot(aes(group_dpq, dif_weight_fct)) +
   geom_errorbarh(aes(xmin =  group_dpq - 1.96*group_se,
      xmax = group_dpq+ 1.96*group_se),
@@ -181,15 +182,25 @@ plot1_df %>%
   labs(x = "Average Depressive Symptomology",
          y = "Desired Weight Loss Goal (in pounds)",
        title = "Depressive Symptoms in Women",
-       subtitle = "According to Desired Weight Loss",
-       caption = expression(
-      atop(italic(Note.)~ "Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.","Data from the 2011 National Health and Nutrition Examination Survey"))) +
+       subtitle = "According to Desired Weight Loss")+
     theme_minimal(base_size = 16)+
-  theme(plot.caption = element_text(size = 10))+
   theme(text = element_text(family = "Pavanam"))+
     theme(axis.title.y = 
           element_text(margin = 
                       margin(t = 0, r = 20, b = 0, l = 0)))
+
+annotate_figure(fig1, 
+                bottom = text_grob(expression(italic(Note.) ~ 'Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.'),
+                                   just = 'left',
+                                   face = 'plain',
+                                   size = 10,
+                                   x = 0)) %>%
+  annotate_figure(
+    bottom = text_grob('Data from the 2011 National Health and Nutrition Examination Survey',
+                       just = 'left',
+                       face = 'plain',
+                       size = 10,
+                       x = 0))
 ```
 
 Row {.tabset .tabset-fade data-width=350, data-height=110}
@@ -287,7 +298,7 @@ secure_group$FSDHH <- as.factor(secure_group$FSDHH)
 
 #final version
 
-secure_group %>%
+fig2 <- secure_group %>%
   ggplot() +
   geom_col(aes(FSDHH,dpq_group, fill = FSDHH), alpha = .8,
            show.legend = F) +
@@ -295,9 +306,7 @@ secure_group %>%
             nudge_y = .4, size = 5)+
   labs(x ="Level of Food Sercurity (per household)",
        y = "Average Depressive Symptomatology",
-       title = "Depressive Symptoms by Food Security Level",
-       caption = expression(
-      atop(italic(Note.)~ "Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.","Data from the 2011 National Health and Nutrition Examination Survey"))) +
+       title = "Depressive Symptoms by Food Security Level") +
   scale_x_discrete(breaks = c(1,2,3,4),
                    labels = c("1" = "Full",
                             "2" = "Marginal",
@@ -313,8 +322,6 @@ secure_group %>%
   theme(panel.grid.major.y = element_blank())+
   theme(axis.ticks = element_line(size = .1, color="black"))+
   theme(axis.text.x = element_text(size = 15))+
-  theme(plot.caption.position = "plot") +
-  theme(plot.caption = element_text(size = 10, color = "#7A777C"))+
   theme(axis.title.y = 
           element_text(margin = 
                       margin(t = 0, r = 20, b = 0, l = 0)))+
@@ -322,6 +329,18 @@ secure_group %>%
           element_text(margin = 
                       margin(t = 10, r = 0, b = 0, l = 0)))
 
+annotate_figure(fig2, 
+                bottom = text_grob(expression(italic(Note.) ~ 'Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.'),
+                                   just = 'left',
+                                   face = 'plain',
+                                   size = 10,
+                                   x = 0)) %>%
+  annotate_figure(
+    bottom = text_grob('Data from the 2011 National Health and Nutrition Examination Survey',
+                       just = 'left',
+                       face = 'plain',
+                       size = 10,
+                       x = 0))
 
 ```
 
