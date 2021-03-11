@@ -298,7 +298,7 @@ secure_group %>%
        y = "Average Depressive Symptomatology",
        title = "Depressive Symptoms by Food Security Level",
        caption = expression(
-      atop(italic(Note.)~ "Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.","Data from the 2011 National Health and Nutrition Examination Survey"))) +
+      atop(italic(Note.)~ "Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.","Data from the 2015 National Health and Nutrition Examination Survey"))) +
   scale_x_discrete(breaks = c(1,2,3,4),
                    labels = c("1" = "Full",
                             "2" = "Marginal",
@@ -778,8 +778,6 @@ Row {data-width=650}
 ```{r plot5final}
 #data prep
 
-weight2003 <- here::here("data", "2003_weight_history.XPT") %>%
-  read_xpt()
 
 weight2005 <- here::here("data", "2005_weight_history.XPT") %>%
   read_xpt()
