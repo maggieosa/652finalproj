@@ -22,9 +22,9 @@ library(colorspace)
 library(ggrepel)
 library(plotly)
 library(colorblindr)
-library(ragg)
+#library(ragg)
 
-knitr::opts_chunk$set(dev= "ragg_png")
+#knitr::opts_chunk$set(dev= "ragg_png")
 ```
 
 
