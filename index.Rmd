@@ -1,15 +1,33 @@
 ---
 title: "U.S. Population Trends in Disordered Eating and Body Image"
 runtime: shiny
-output: 
+output:
   flexdashboard::flex_dashboard:
     css: 652final.css
     theme: journal
-    resize_reload: FALSE
+    resize_reload: no
     social: menu
     orientation: rows
     vertical_layout: scroll
     source_code: https://github.com/maggieosa/652finalproj
+resource_files:
+- data_cleaning.R
+- data/plot1_df.csv
+- 652finalproj.Rproj
+- README.md
+- LICENSE
+- data/secure_group.csv
+- data/secure_dep.csv
+- data/race_weight_labeled.csv
+- data/race_weight_group.csv
+- data/long_plot.csv
+- data/long_plot_draft.csv
+- data/full_yr_grouped.csv
+- data/full_df.csv
+- data/dep_filtered.csv
+- 652dash.Rmd
+- 652final_prep.Rmd
+- index_og.Rmd
 ---
   
 ```{r setup, include=FALSE}
@@ -127,7 +145,6 @@ plot1_df %>%
       atop(italic(Note.)~ "Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.","Data from the 2011 National Health and Nutrition Examination Survey"))) +
     theme_minimal(base_size = 16)+
   theme(plot.caption = element_text(size = 10))+
-  theme(text = element_text(family = "Pavanam"))+
     theme(axis.title.y = 
           element_text(margin = 
                       margin(t = 0, r = 20, b = 0, l = 0)))
@@ -526,7 +543,6 @@ final_race_plot <- race_weight_labeled %>%
   theme_minimal(base_size = 14) +
   theme(plot.caption = element_text(size = 10))+
   theme(axis.text=element_text(size=14))+
-  theme(text = element_text(family = "Pavanam"))+
   theme(plot.caption = element_text(size = 10, color = "#7A777C"))
 
 

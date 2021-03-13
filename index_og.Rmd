@@ -23,9 +23,6 @@ library(ggrepel)
 library(plotly)
 library(colorblindr)
 
-#library(ragg)
-
-#knitr::opts_chunk$set(dev= "ragg_png")
 ```
 
 
@@ -193,7 +190,6 @@ plot1_df %>%
       atop(italic(Note.)~ "Higher scores indicate a greater prevalence of depressive symptoms within a two-week period.","Data from the 2011 National Health and Nutrition Examination Survey"))) +
     theme_minimal(base_size = 16)+
   theme(plot.caption = element_text(size = 10))+
-  theme(text = element_text(family = "Pavanam"))+
     theme(axis.title.y = 
           element_text(margin = 
                       margin(t = 0, r = 20, b = 0, l = 0)))
@@ -960,7 +956,6 @@ final_race_plot <- race_weight_labeled %>%
   theme_minimal(base_size = 14) +
   theme(plot.caption = element_text(size = 10))+
   theme(axis.text=element_text(size=14))+
-  theme(text = element_text(family = "Pavanam"))+
   theme(plot.caption = element_text(size = 10, color = "#7A777C"))
 
 
