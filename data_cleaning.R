@@ -1,6 +1,7 @@
 ##### PLOT ONE #######
 
 library(tidyverse)
+library(haven)
 
 # dataprep
 weight2011 <- here::here("data", "2011_weight_history.XPT") %>%

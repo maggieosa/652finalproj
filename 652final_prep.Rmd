@@ -273,8 +273,7 @@ secure_group %>%
 # Data Prep for Third Plot 
 
 ```{r securetrends, echo=TRUE}
-weight2003 <- here::here("data", "2003_weight_history.XPT") %>%
-  read_xpt()
+
 
 weight2005 <- here::here("data", "2005_weight_history.XPT") %>%
   read_xpt()
@@ -293,8 +292,7 @@ weight2015 <- here::here("data", "2015_weight_history.XPT") %>%
 
 ###foodinsecure
 
-food2003 <- here::here("data", "2003_food_security.XPT") %>%
-  read_xpt()
+
 
 food2005 <- here::here("data", "2005_food_security.XPT") %>%
   read_xpt()
@@ -621,8 +619,7 @@ long_plot %>%
 # Data Preparation of Fifth Plot
 
 ```{r racetrends_data}
-weight2003 <- here::here("data", "2003_weight_history.XPT") %>%
-  read_xpt()
+
 
 weight2005 <- here::here("data", "2005_weight_history.XPT") %>%
   read_xpt()

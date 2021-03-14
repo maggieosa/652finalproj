@@ -532,8 +532,6 @@ Row {data-width=650}
 ```{r plot5final, warning=FALSE,message=FALSE}
 
 
-label <- "There is a widespread stereotype that non-Hispanic White women represent the majority of eating disorder cases. However, these data demonstrate that non-Hispanic Black women report the highest rates of disordered eating symptoms."
-
 
 ####final plot#####
 
@@ -561,11 +559,10 @@ final_race_plot <- race_weight_labeled %>%
                      limits = c(0.1,0.22))+
   scale_color_OkabeIto() +
   labs(x = "Year",
-       y = "Proportion of Sample Engagement \nin Disordered Eating (%)\n                     ",
+       y = "Proportion of Sample Engagement \nin Disordered Eating (%)",
        color = "Racial Identity", 
        caption = "Data from the National Health and Nutrition Examination Survey 2005-2015", 
-       title = "Population Trends in Disordered Eating Over 10 Years",
-       subtitle = "by Racial Identity") +
+       title = "Racial Identity Population Trends in Disordered Eating Over 10 Years") +
   theme_minimal(base_size = 14) +
   theme(plot.caption = element_text(size = 10))+
   theme(axis.text=element_text(size=14))+
