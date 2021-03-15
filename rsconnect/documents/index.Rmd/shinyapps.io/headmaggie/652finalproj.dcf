@@ -5,8 +5,8 @@ account: headmaggie
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3777311
-bundleId: 4348640
+bundleId: 4348976
 url: https://maggieosa.shinyapps.io/652finalproj/
-when: 1615826265.16627
+when: 1615831709.16092
 asMultiple: FALSE
 asStatic: FALSE
