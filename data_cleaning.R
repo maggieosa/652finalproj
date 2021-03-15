@@ -59,7 +59,12 @@ dep_lev <- dep %>%
                                      "75-100" = "[-100, -75)",
                                      "50-75" = "[ -75, -50)",
                                      "25-50" = "[ -50, -25)",
-                                     "0-25" = "[ -25, 100]"))
+                                     "0-25" = "[ -25, 100]"),
+         dif_weight_fct= fct_relevel(dif_weight_fct, 
+                                   "0-25", "25-50", "50-75", 
+                                   "75-100", "100-125", "More than\n125 lbs"))
+
+
 
 #mean by factor
 plot1_df <-dep_lev %>%
@@ -67,15 +72,7 @@ plot1_df <-dep_lev %>%
   summarise(group_dpq = mean(dpq),
             group_se = sd(dpq)/sqrt(n()))
 
-#reorder
-plot1_df$dif_weight_fct<- 
-  factor(plot1_df$dif_weight_fct,
-         levels = c("0-25",
-                    "26-50",
-                    "51-75",
-                    "76-100",
-                    "101-125",
-                    "More than\n125 lbs")) 
+
 
 write_csv(plot1_df,
           file = here::here('data', 'plot1_df.csv'))
