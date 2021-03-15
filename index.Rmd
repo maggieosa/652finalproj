@@ -1,5 +1,5 @@
 ---
-title: "U.S. Population Trends in Disordered Eating and Body Image"
+title: "U.S. Population Trends in Disordered Eating, Body Image, and Food Security"
 runtime: shiny
 output:
   flexdashboard::flex_dashboard:
