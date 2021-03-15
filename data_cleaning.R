@@ -67,6 +67,15 @@ plot1_df <-dep_lev %>%
   summarise(group_dpq = mean(dpq),
             group_se = sd(dpq)/sqrt(n()))
 
+#reorder
+plot1_df$dif_weight_fct<- 
+  factor(plot1_df$dif_weight_fct,
+         levels = c("0-25",
+                    "26-50",
+                    "51-75",
+                    "76-100",
+                    "101-125",
+                    "More than\n125 lbs")) 
 
 write_csv(plot1_df,
           file = here::here('data', 'plot1_df.csv'))

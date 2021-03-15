@@ -3,7 +3,7 @@ title: "U.S. Population Trends in Disordered Eating, Body Image, and Food Securi
 runtime: shiny
 output:
   flexdashboard::flex_dashboard:
-    css: 652final.css
+    css: 652finalcss.css
     theme: journal
     resize_reload: no
     social: menu
@@ -11,7 +11,7 @@ output:
     vertical_layout: scroll
     source_code: https://github.com/maggieosa/652finalproj
 resource_files:
-- 652final.css
+- 652finalcss.css
 - data_cleaning.R
 - 652finalproj.Rproj
 - README.md
@@ -26,11 +26,9 @@ resource_files:
 - data/full_yr_grouped.csv
 - data/full_df.csv
 - data/dep_filtered.csv
-- early_drafts/index_og.Rmd
-- early_drafts/652final_prep.Rmd
-- early_drafts/652final_prep.html
-- early_drafts/652dash.Rmd
-- early_drafts/652dash.html
+- index_og.Rmd
+- 652final_prep.Rmd
+- 652dash.Rmd
 ---
   
 ```{r setup, include=FALSE}
@@ -116,13 +114,14 @@ Row {data-width=650}
 plot1_df <- here::here('data', 'plot1_df.csv') %>%
   read_csv()
 
+plot1_df$dif_weight_fct<-as.factor(plot1_df$dif_weight_fct)
+
+plot1_df$dif_weight_fct<- fct_relevel(plot1_df$dif_weight_fct, 
+                                   "0-25", "25-50", "50-75", 
+                                   "75-100", "100-125", "More than\n125 lbs")
 
 fig1 <- plot1_df %>%
   ggplot(aes(group_dpq, dif_weight_fct)) +
-  geom_errorbarh(aes(xmin =  group_dpq - 1.96*group_se,
-     xmax = group_dpq+ 1.96*group_se),
-     color = "thistle",
-     height = .2) +
   geom_errorbarh(aes(xmin = group_dpq + qnorm(.025)*group_se,
                     xmax = group_dpq + qnorm(.975)*group_se),
                 color = "cyan4",
@@ -139,6 +138,7 @@ fig1 <- plot1_df %>%
                 height = 0.2,
                 size = 1.1) +
   geom_point() +
+  scale_y_discrete(limits = rev(levels(plot1_df$dif_weight_fct)))+
   labs(x = "Average Depressive Symptomology",
          y = "Desired Weight Loss Goal (in pounds)",
        title = "Depressive Symptoms in Women",
