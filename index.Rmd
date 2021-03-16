@@ -427,7 +427,7 @@ Row {data-width=1000}
 
 ### Chart Narrative: Third Visual 
 
-A leading aim of my research is a focus on structural and ecological contributors to disordered eating behaviors. Recent research suggests food security is associated with eating pathology (Becker et al., 2017). Thus, the purpose of this visualization was demonstrate disordered eating pathology across ten years according to level of food security.
+A leading aim of my research is a focus on structural and ecological contributors to disordered eating behaviors. Recent research suggests food security is associated with eating pathology (Becker et al., 2017). Thus, the purpose of this visualization was to demonstrate disordered eating pathology across ten years according to level of food security.
 The first iteration of this graph was a simple plot of the average sample engagement in disordered eating behaviors within each food security group. Although I was successful in differntiating group differences according to color, a simple scatterplot rendered it impossible to clearly view the trends in disordered eating behaviors over time. Therefore, in the second version, I imposed lines using geom_line() on top of geom_point(). Prior to this class, I had very little experience with ggplot - so limited that I was unaware of the usefulness of employing multiple geom functions to show a relationship. The combination of points and lines allows the viewer to easily trace the percentages across time within each food security group.   
 
 
